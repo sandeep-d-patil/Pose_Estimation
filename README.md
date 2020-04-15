@@ -17,7 +17,8 @@ All datasets used in the paper are not standard sets that are included within th
 
 First, we load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of DataSet from torch.utils.data in our dataloader, which is done by overwriting the __len__ and __getitem__ methods. Next, a train_set is d
 
-'from torch.utils.data import Dataset
+'''
+from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from datasets import pascal3d
 
@@ -55,7 +56,8 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}       
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 val_loader = DataLoader(val_set, batch_size=5, shuffle=False, **kwargs)
-test_loader = DataLoader(test_set, batch_size=5, shuffle=False, **kwargs)'
+test_loader = DataLoader(test_set, batch_size=5, shuffle=False, **kwargs)
+'''
 
 
 
