@@ -22,17 +22,17 @@ The architecture of the network is similar between the single density and finite
 The input for the network is a RGB image and the output is 1x6 tensor having predicted angles of the pose of the object in the image, which are in the bit format. This is not a conventional output format and has effects on usage of the standard loss functions such as cross entropy loss function.
 ```
 class vgg_model(nn.Module):
-  def __init__(self, n_outputs=6, image_height=224, image_width=224, n_channels=3, # constructor
+  def __init__(self, n_outputs=6, image_height=224, image_width=224, n_channels=3, 
                conv_dropout_val=0.2, fc_dropout_val=0.5, fc_layer_size=512):
     super(vgg_model, self).__init__()
     self.conv_layer1 = nn.Sequential(
-        nn.Conv2d(3, 24, kernel_size=3, stride=1), #in_channels = 3 -> RGB values
-        nn.BatchNorm2d(24),         # Batch normalization; number of features is equal to n channels of previous convlayer
-        nn.ReLU())                  #ReLU activation function
+        nn.Conv2d(3, 24, kernel_size=3, stride=1), 
+        nn.BatchNorm2d(24),         
+        nn.ReLU())                  
     self.conv_layer2 = nn.Sequential(
-        nn.Conv2d(24, 24, kernel_size=3, stride=1), #add activation
+        nn.Conv2d(24, 24, kernel_size=3, stride=1), 
         nn.BatchNorm2d(24), 
-        nn.MaxPool2d(2),            #2D pooling of square window with size = 2 
+        nn.MaxPool2d(2),            
         nn.ReLU())
     self.conv_layer3 = nn.Sequential(
         nn.Conv2d(24, 48, kernel_size=3, stride=1),
@@ -52,11 +52,11 @@ class vgg_model(nn.Module):
         nn.BatchNorm2d(64),
         nn.ReLU())
     self.dropout7 = nn.Sequential(
-        nn.Dropout2d(conv_dropout_val)) # dropout 
+        nn.Dropout2d(conv_dropout_val))
     self.dense_layer8 = nn.Sequential(
         nn.Flatten(),
-        nn.Linear(49*49*64, 512),       # nn.Linear is used to create a fully connected layer.  [50,50,3] -> [48,48,24] -> [46,46,24] -> [23,23,24] -> [21,21,48] -> [19,19,48] -> [9,9,48] -> [7,7,64] -> [5,5,64] --> 1600 total input
-        nn.ReLU())                                                                          #[224,224,3]-[222,222,24]-[220,220,24]-[110,110,24]-[108,108,48]-[106,106,48]-[53,53,48]-[51,51,64]-[49,49,64]
+        nn.Linear(49*49*64, 512),       
+        nn.ReLU())                                                                        
     self.dropout9 = nn.Dropout2d(fc_dropout_val)                                            
     self.dense_layer10 = nn.Linear(512, n_outputs)
 
@@ -73,9 +73,9 @@ class vgg_model(nn.Module):
     if final_layer:
       x = self.dense_layer10(x)
       if l2_normalize_final:
-        x = F.normalize(x,dim=1,p=2)    # normalization in pytorch; p=2 means l2-normalization.
+        x = F.normalize(x,dim=1,p=2)    
     return x  
-    ```
+```
 
 ## Dataset and DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training, testing and validation samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
