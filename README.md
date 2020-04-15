@@ -141,4 +141,4 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ![loadimages](/images/loadimage.jpeg)
 
 ## Results
-The training of network is carried out with the pascal 3D+ datasets as explained earlier. The kappa values from the validation sets are not to the satisfaction and the errors are found to be very high. This is due to the lower number of epochs used for training, network tuning. Hence the results are not displayed. We will carry out more training of the data in coming days and present better results for all the three datasets namely, Pascal 3D+, CAVIAR and TownCentre datasets.
+In order to verify that the entire Pytorch model is working appropriatly the network is trained with the pascal 3D+ datasets as explained earlier. The obtained result are not yet satisfactoy, which is concluded from the high errors and strange values for kappa. This is most likely the result of a small amount of training time and additionally some required parameter/code tuning here and there. Hence the results are not displayed. We will carry out more training of the data in coming days and present sufficient results for the CAVIAR-o, TownCentre and PASCAL3D+ datasets.
