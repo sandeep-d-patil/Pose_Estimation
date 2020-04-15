@@ -12,7 +12,50 @@ The architecture of the network is similar between the single density and finite
 
 The input for the network is a RGB image and the output is 1x6 tensor having predicted angles of the pose of the object in the image, which are in the bit format. This is not a conventional output format and has effects on usage of the standard loss functions such as cross entropy loss function.
 
+## Dataset and DataLoader
+All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own dataloader class that will be used later on to run the batches in the training process. 
 
+First, we load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of DataSet from torch.utils.data in our dataloader, which is done by overwriting the __len__ and __getitem__ methods. Next, a train_set is d
+
+'from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+from datasets import pascal3d
+
+cls = 'aeroplane' # if cls is None, all classes will be loaded
+pascaldb_path = 'data/pascal3d+_imagenet_train_test.h5'
+x_train_tf, y_train_tf, x_val_tf, y_val_tf, x_test_tf, y_test_tf = pascal3d.load_pascal_data(pascaldb_path, cls=cls)
+
+# preparing the pascal3d dataset for the pytorch environment
+x_train = (torch.tensor(x_train_tf[:])).permute(0, 3, 1, 2).float() 
+y_train = torch.tensor(y_train_tf[:])
+x_val = (torch.tensor(x_val_tf[:])).permute(0, 3, 1, 2).float() 
+y_val = torch.tensor(y_val_tf[:])
+x_test = (torch.tensor(x_test_tf[:])).permute(0, 3, 1, 2).float() 
+y_test = torch.tensor(y_test_tf[:])
+
+class dataloader(Dataset):
+  def __init__(self, samples, labels):
+    self.labels = labels
+    self.samples = samples
+
+  def __len__(self):
+    return len(self.samples)
+  
+  def __getitem__(self, index):
+    sample = self.samples[index]
+    label = self.labels[index]
+    return sample, label
+
+train_set = dataloader(x_train, y_train)
+val_set = dataloader(x_val, y_val)
+test_set = dataloader(x_test, y_test)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}         # pin_memory = True --> automatically put the fetched data Tensors in pinned memory, and thus enables faster data transfer to CUDA-enabled GPUs.
+
+train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
+val_loader = DataLoader(val_set, batch_size=5, shuffle=False, **kwargs)
+test_loader = DataLoader(test_set, batch_size=5, shuffle=False, **kwargs)'
 
 
 
@@ -28,12 +71,6 @@ The input for the network is a RGB image and the output is 1x6 tensor having pre
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
 
 - Bulleted
 - List
