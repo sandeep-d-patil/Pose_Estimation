@@ -13,9 +13,7 @@ The architecture of the network is similar between the single density and finite
 The input for the network is a RGB image and the output is 1x6 tensor having predicted angles of the pose of the object in the image, which are in the bit format. This is not a conventional output format and has effects on usage of the standard loss functions such as cross entropy loss function.
 
 ## Dataset and DataLoader
-All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own dataloader class that will be used later on to run the batches in the training process. 
-
-First, we load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of DataSet from torch.utils.data in our dataloader, which is done by overwriting the '__len__' and '__getitem__' methods. Next, a train_set is d
+All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training, testing and validation samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the '__len__' and '__getitem__' methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
 
 ```from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -58,38 +56,3 @@ val_loader = DataLoader(val_set, batch_size=5, shuffle=False, **kwargs)
 test_loader = DataLoader(test_set, batch_size=5, shuffle=False, **kwargs)
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sandeeprockstar/Pose_Estimation/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-This document is created by Sandeep Patil
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
