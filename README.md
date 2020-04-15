@@ -15,7 +15,8 @@ The input for the network is a RGB image and the output is 1x6 tensor having pre
 ## Dataset and DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training, testing and validation samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the '__len__' and '__getitem__' methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
 
-```from torch.utils.data import Dataset
+```markdown
+from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from datasets import pascal3d
 
