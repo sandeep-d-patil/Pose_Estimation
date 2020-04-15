@@ -78,7 +78,7 @@ class vgg_model(nn.Module):
 ```
 
 ## Dataset and DataLoader
-All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training, testing and validation samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
+All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
 
 ```markdown
 from torch.utils.data import Dataset
@@ -118,7 +118,5 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {} 
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
-val_loader = DataLoader(val_set, batch_size=5, shuffle=False, **kwargs)
-test_loader = DataLoader(test_set, batch_size=5, shuffle=False, **kwargs)
 ```
 
