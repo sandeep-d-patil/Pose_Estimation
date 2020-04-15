@@ -15,7 +15,7 @@ The input for the network is a RGB image and the output is 1x6 tensor having pre
 ## Dataset and DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own dataloader class that will be used later on to run the batches in the training process. 
 
-First, we load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of DataSet from torch.utils.data in our dataloader, which is done by overwriting the __len__ and __getitem__ methods. Next, a train_set is d
+First, we load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of DataSet from torch.utils.data in our dataloader, which is done by overwriting the '__len__' and '__getitem__' methods. Next, a train_set is d
 
 ```from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -51,7 +51,7 @@ val_set = dataloader(x_val, y_val)
 test_set = dataloader(x_test, y_test)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}         # pin_memory = True --> automatically put the fetched data Tensors in pinned memory, and thus enables faster data transfer to CUDA-enabled GPUs.
+kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {} 
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 val_loader = DataLoader(val_set, batch_size=5, shuffle=False, **kwargs)
