@@ -126,7 +126,8 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 ```
-The datasets are visualized as below. Here the airplane class data has been used 
+The Pascal 3D+ datasets are visualized below. The airplane class data has been used to train, validate and test the model. The test dataset has 2247 images. The validation and testing datasets have 562 and 275 images respectively. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose.
+
 ```markdown
 import matplotlib.pyplot as plt
 
@@ -140,3 +141,4 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ![loadimages](/images/loadimage.jpeg)
 
 ## Results
+The training of network is carried out with the pascal 3D+ datasets as explained earlier. The kappa values from the validation sets are not to the satisfaction and the errors are found to be very high. This is due to the lower number of epochs used for training, network tuning. Hence the results are not displayed. We will carry out more training of the data in coming days and present better results for all the three datasets namely, Pascal 3D+, CAVIAR and TownCentre datasets.
