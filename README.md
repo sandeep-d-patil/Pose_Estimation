@@ -140,5 +140,37 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 ![loadimages](/images/loadimage.jpeg)
 
+## Training 
+The training algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
+```markdown
+def train(train_loader, model, max_epochs, optimizer, criterion):
+  for epoch in range(max_epochs): 
+    running_loss = 0.0
+    for i, data in enumerate(train_loader):
+      local_batch, local_labels = data
+      # Transfer the batches to the GPU
+      local_batch, local_labels = local_batch.to(device), local_labels.to(device)
+
+      # zero the parameter gradients
+      optimizer.zero_grad()
+
+      # forward + loss + backward + optimize
+      outputs = model(local_batch)
+      loss = cosine_loss_nn(local_labels, outputs)
+
+      loss.backward(torch.ones_like(loss))
+      optimizer.step()
+
+      # print statistics
+      running_loss += loss.item()
+      if i % 100 == 99:    
+          print('[%d, %5d] loss: %.3f' %
+                (epoch + 1, i + 1, running_loss / 100))
+          running_loss = 0.0
+
+  print('Finished Training')
+  PATH = 'data/model_weights_single_density.pth'
+  torch.save(model.state_dict(), PATH)
+```
 ## Results
 In order to verify that the entire Pytorch model is working appropriatly the network is trained with the pascal 3D+ datasets as explained earlier. The obtained result are not yet satisfactoy, which is concluded from the high errors and strange values for kappa. This is most likely the result of a small amount of training time and additionally some required parameter/code tuning here and there. Hence the results are not displayed. We will carry out more training of the data in coming days and present sufficient results for the CAVIAR-o, TownCentre and PASCAL3D+ datasets.
