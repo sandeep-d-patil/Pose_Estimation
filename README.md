@@ -126,7 +126,7 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 ```
-The datasets are visualized as below. Here the aeroplane class data has been used 
+The datasets are visualized as below. Here the airplane class data has been used 
 ```markdown
 import matplotlib.pyplot as plt
 
@@ -137,5 +137,6 @@ grid = torchvision.utils.make_grid(image[0:10], nrow=10 )
 plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
 ```
+![loadimages](/images/loadimage.jpeg)
 
 ## Results
