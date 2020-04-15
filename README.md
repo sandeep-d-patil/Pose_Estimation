@@ -140,7 +140,7 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 ![loadimages](/images/loadimage.jpeg)
 
-## Training 
+## Training, Validation and Evaluation
 The training algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
 ```markdown
 def train(train_loader, model, max_epochs, optimizer, criterion):
@@ -172,5 +172,8 @@ def train(train_loader, model, max_epochs, optimizer, criterion):
   PATH = 'data/model_weights_single_density.pth'
   torch.save(model.state_dict(), PATH)
 ```
+
+The code for the validation and evaluation are omitted as they still require some cleaning. As explained earlier, the validation set is used to tune parameter kappa and the evaluation set is to verify the fit of the model with regards to log likelihood and Mean Absolute Angular Deviation (MAAD).
+
 ## Results
 In order to verify that the entire Pytorch model is working appropriatly the network is trained with the pascal 3D+ datasets as explained earlier. The obtained result are not yet satisfactoy, which is concluded from the high errors and strange values for kappa. This is most likely the result of a small amount of training time and additionally some required parameter/code tuning here and there. Hence the results are not displayed. We will carry out more training of the data in coming days and present sufficient results for the CAVIAR-o, TownCentre and PASCAL3D+ datasets.
