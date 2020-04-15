@@ -80,6 +80,9 @@ class vgg_model(nn.Module):
         x = F.normalize(x,dim=1,p=2)    
     return x  
 ```
+The summary of the model is as shown below with the details of number of trainable parameters and sizes of each layer.
+
+![Summary](/images/summary.jpeg)
 
 ## Dataset and DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
@@ -123,4 +126,16 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 ```
+The datasets are visualized as below. Here the aeroplane class data has been used 
+```markdown
+import matplotlib.pyplot as plt
+
+sample = next(iter(train_loader))
+image, label = sample
+
+grid = torchvision.utils.make_grid(image[0:10], nrow=10 )
+plt.figure(figsize=(15,15))
+plt.imshow(np.transpose(grid, (1,2,0)))
+```
+
 ## Results
