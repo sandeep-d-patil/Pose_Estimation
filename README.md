@@ -93,7 +93,7 @@ The summary of the model is as shown below with the details of number of trainab
 
 ## Dataset and DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the PASCAL3D+ dataset using a script provided by the author to split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
-
+<!---
 ```markdown
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -133,6 +133,7 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
 
 train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
 ```
+-->
 The airplane class data has been used to train, validate and test the model. The test dataset has 2247 images. The validation and testing datasets have 562 and 275 images respectively. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose.
 
 The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
