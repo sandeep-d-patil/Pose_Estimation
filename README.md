@@ -29,7 +29,7 @@ The finite mixture model can be visualized as below. A complex distribution is g
 
 The input for the network is a RGB image and the output is 1x6 tensor having predicted angles of the pose of the object in the image, which are in the bit format. This is not a conventional output format and has effects on usage of the standard loss functions such as cross entropy loss function.
 
-```markdown
+[comment]```markdown
 class vgg_model(nn.Module):
   def __init__(self, n_outputs=6, image_height=224, image_width=224, n_channels=3, 
                conv_dropout_val=0.2, fc_dropout_val=0.5, fc_layer_size=512):
