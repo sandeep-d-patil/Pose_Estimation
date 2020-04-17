@@ -7,6 +7,13 @@ The proposed method for uncertainty quantification consists of using a VGG-style
 
 The paper was provided with code, which was written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
+# Understanding the original code
+As we both are complete novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
+
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options are: 
+* cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check!
+* maximizing von Mises log likelihood with a predicted kappa value.
+
 # Setting up the Google Colab environment
 The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
 
