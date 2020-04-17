@@ -13,21 +13,34 @@ As we both are complete novices in both Pytorch and Tensorflow understanding the
 We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options are: 
 1. cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check!
 1. maximizing von Mises log likelihood with a predicted kappa value.
+dfd
 
-So for the first option the following happens within the network:
-1 Initialization:
-  * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
-  * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
-  * Define symbolic input X shape using `Input()`.
-  * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
-  * Feed symbolic output, vgg_x, through a fully connected layer and normalize output with L2 normalization. The output is named `y_pred`. Essentially, `y_pred` now defines the path from the input until the final normalization layer.
-  * Since predict_kappa = False, the feedforward is defined using `Model()`. This maps the symbolic input X through the above defined network to the final output. The feedforward is defined as names `model`.
-  * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
-  * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs ar ethe loss function and optimizer. 
+ * So for the first option the following happens within the network:
+    * Initialization:
+      * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
+      * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
+      * Define symbolic input X shape using `Input()`.
+      * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
+      * Feed symbolic output, vgg_x, through a fully connected layer and normalize output with L2 normalization. The output is named `y_pred`. Essentially, `y_pred` now defines the path from the input until the final normalization layer.
+      * Since predict_kappa = False, the feedforward is defined using `Model()`. This maps the symbolic input X through the above defined network to the final output. The feedforward is defined as names `model`.
+      * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
+      * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs ar ethe loss function and optimizer. 
 
-2. Training 
-  * The training is called using the `fit` method corresponding the the `model` defined above; `model.fit(x_tr, y_tr, x_val, y_val, ..);
-  *
+   * Training:
+     * The training is called using the `fit` method corresponding the the `model` defined above; `model.fit(x_tr, y_tr, x_val, y_val, ..);
+     * The model is automatically trained. 
+      * After each batch the average loss and accuracy on that specific batch are printed. 
+      * After each epoch the entire validation set is run throug the model and the average loss and accuracy are printed
+      * Training is done after all epochs are ran.
+   
+   * Fine-tuning Kappa using the validation set:
+     * The `finetune_kappa` method is called, since predict_kappa = False. 
+     * `model.predict(x_val)` is called for all validation samples and returns predicted biternion angles for all samples
+     * a vector is created containing values for kappa between 0 and max_kappa. 
+     * the mean von Mises log likelihood is calculated for each kappa on all predicted values.
+     * The kappa value that has the largest log likelihood is set as the fixed kappa value. Note that this kappa value applies to ALL images and is therefore not considered ideal.
+  
+
 
 
 
