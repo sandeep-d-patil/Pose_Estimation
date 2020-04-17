@@ -11,8 +11,26 @@ The paper was provided with code, which was written in Tensorflow using the Kera
 As we both are complete novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
 
 We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options are: 
-* cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check!
-* maximizing von Mises log likelihood with a predicted kappa value.
+1. cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check!
+1. maximizing von Mises log likelihood with a predicted kappa value.
+
+So for the first option the following happens within the network:
+1 Initialization:
+  * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
+  * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
+  * Define symbolic input X shape using `Input()`.
+  * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
+  * Feed symbolic output, vgg_x, through a fully connected layer and normalize output with L2 normalization. The output is named `y_pred`. Essentially, `y_pred` now defines the path from the input until the final normalization layer.
+  * Since predict_kappa = False, the feedforward is defined using `Model()`. This maps the symbolic input X through the above defined network to the final output. The feedforward is defined as names `model`.
+  * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
+  * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs ar ethe loss function and optimizer. 
+
+2. Training 
+  * The training is called using the `fit` method corresponding the the `model` defined above; `model.fit(x_tr, y_tr, x_val, y_val, ..);
+  *
+
+
+
 
 # Setting up the Google Colab environment
 The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
