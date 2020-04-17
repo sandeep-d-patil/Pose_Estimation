@@ -10,12 +10,9 @@ The paper was provided with code, which was written in Tensorflow using the Kera
 # Understanding the original code
 As we both are complete novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
 
-We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options are: 
-1. cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check!
-1. maximizing von Mises log likelihood with a predicted kappa value.
-dfd
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options explained below.
 
- * So for the first option the following happens within the network:
+ * cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check! 
     * Initialization:
       * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
       * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
@@ -40,7 +37,7 @@ dfd
      * the mean von Mises log likelihood is calculated for each kappa on all predicted values.
      * The kappa value that has the largest log likelihood is set as the fixed kappa value. Note that this kappa value applies to ALL images and is therefore not considered ideal.
   
-
+* maximizing von Mises log likelihood with a predicted kappa value.
 
 
 
