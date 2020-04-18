@@ -16,7 +16,7 @@ We started out by learning how a neural network is built and trained within Tens
     * Initialization:
        * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
        * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
-       * Define symbolic input X shape using `Input()`.
+       * Define symbolic input(here, referring to keras Tensor) X shape using `Input()`.
        * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
        * Feed symbolic output, vgg_x, through a fully connected layer and normalize output with L2 normalization. The output is named `y_pred`. Essentially, `y_pred` now defines the path from the input until the final normalization layer.
        * The feedforward is defined using `Model(input_x, y_pred)`. This maps the symbolic input X through the above defined network to the final output. The feedforward is defined as names `model`.
@@ -40,7 +40,7 @@ We started out by learning how a neural network is built and trained within Tens
        * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`. Scenario with predict_kappa=False not required, right?!?!
        * Run `_pick_loss` method thereby setting loss equal to `von Mises log likelihood`, which is the negative von Mises Log Likelihood with corresponding inputs: ground truth in biternion angles, predicted biternion angles and predicted kappa value.
        * Define symbolic input X shape using `Input()`.
-       * Feed symbolic input(here, referring to keras Tensor) through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
+       * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
        * Feed symbolic output, `vgg_x`, through a fully connected layer with 2 outputs (angle prediction) and normalize output with L2 normalization. 
        * Feed symbolic output, `vgg_x`, ALSO through a fully connected layer with 1 output (kappa prediction) and make the output absolute. 
        * Since predict_kappa = True, the feedforward is defined using `Model(input_X, concatenate[y_pred, kappa_pred])`. This maps the symbolic input X through the above defined network to the final output. Note that this time the network splits up after the VGG backbone into two different dense layers followed by two different lambda layers. The outputs are then combined again forming 1 output. The feedforward is defined as names `model`.
