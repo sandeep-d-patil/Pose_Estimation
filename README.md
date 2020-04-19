@@ -101,8 +101,24 @@ class vgg_model(nn.Module):
               x = self.ypred(x_vgg)
       return x
 ```
-## Dataset and DataLoader
-All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the datasets, which is done with a script provided by the author that split the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
+
+# Datasets
+The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre datasets and they are divided into three parts namely training , validation and testing. the distribution are as shown as follows.
+
+Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre
+------------ | -------------|-----------|---------|
+Train set | 2247 | 10802 | 6916
+Validation set| 562 |5444 | 874
+Test set  | 275 |5445 | 904
+
+[PASCAL 3D+](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view) contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose.
+
+[CAVIAR-o](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/) dataset contains images of partially occluded heads , the images have been upscaled to 50x50x3 images from their original size of 7x7x3 images. the truth values contain the gaze angle in degrees. Due to availability of the more images , the number of validation set and testing set are increased. This dataset pose a challenge for the network due to two things mainly, upscale and blur in the image.
+
+[Towncentre](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/) dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels.
+
+## DataLoader
+All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the datasets, which is done with a script provided by the author that splits the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
 
 ```markdown
 from torch.utils.data import Dataset
@@ -199,14 +215,6 @@ elif load_dataset == 'towncentre':
 
 data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader} 
 ```
-The distribution of the data is illustrated in the table below.
-
- |  | CAVIAR-o | TownCentre | PASCAL3D+| 
-| ------|------ |------ | ------| 
-| Training| 10000000  |  1000000 |  2247| 
-| Validation |10000000 | 10000000| 562| 
-| Testing |10000000 |10000000 | 275 | 
-
 
 In case that kappa is not predicted by the model, the validation set is used to calculate the kappa depending using the von Mises log likelihood criteria. The kappa value is a measure of concertration of the data around the mean value of the distribution. The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
 
