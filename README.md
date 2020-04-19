@@ -225,8 +225,83 @@ plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
+## Recoding required functions from Tensorflow to Pytorch
+The single density model requires a several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These functions include loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
+
+``` markdown
+# Loss functions
+def cosine_loss_py(y_target, y_pred):
+    loss = 1 - torch.sum(torch.mul(y_target, y_pred), dim=1)
+    mean_loss = torch.mean(loss)
+    return mean_loss
+
+def von_mises_neg_log_likelihood_py(y_true, y_pred):
+    mu_pred = y_pred[:, 0:2]
+    kappa_pred = y_pred[:, 2:]
+    return -torch.mean(von_mises_log_likelihood_py(y_true, mu_pred, kappa_pred, input_type='biternion'))
+
+# Conversion of von_mises_log_likelihood_tf
+def von_mises_log_likelihood_py(y_true, mu_pred, kappa_pred, input_type='biternion'):
+    if input_type == 'degree':
+        scaler = 0.0174533
+        cosin_dist = torch.cos(scaler * (y_true - mu_pred))
+    elif input_type == 'radian':
+        cosin_dist = torch.cos(y_true - mu_pred)
+    elif input_type == 'biternion':
+        cosin_dist = torch.reshape(torch.sum(torch.mul(y_true, mu_pred), axis=1), [-1, 1])
+    log_likelihood = kappa_pred * cosin_dist - \
+                     torch.log(2 * torch.tensor([math.pi]).to(device)) - log_bessel_approx_py(kappa_pred) #torch.log(2 * torch.tensor([math.pi])) - log_bessel_approx_py(kappa_pred) 
+    return torch.reshape(log_likelihood, [-1, 1])
+
+# Conversion of log_bess_approx_tf
+def log_bessel_approx_py(x):
+    x = torch.reshape(x, [-1, 1])
+
+    def log_bessel_approx_0(x):
+        bessel_taylor_coefs = torch.tensor([1.00000000e+00, 2.50000000e-01, 1.56250000e-02,
+                                          4.34027778e-04, 6.78168403e-06]).to(device)
+        m = bessel_taylor_coefs.shape[0]
+        deg = torch.reshape(torch.arange(0, m, 1) *2 , [1, -1])
+        n_rows = x.size(0)
+        x_tiled = x.repeat(1,m)
+        deg_tiled = deg.repeat(n_rows,1)
+        deg_reshape = torch.reshape(bessel_taylor_coefs[0:m],[1,m])
+        coef_tiled = deg_reshape.repeat(n_rows,1)
+        deg_tiled = deg_tiled.type(torch.FloatTensor).to(device)
+        val = torch.log(torch.sum(torch.pow(x_tiled, deg_tiled)*coef_tiled, axis=1))
+        return torch.reshape(val, [-1, 1])
+
+    def _log_bessel_approx_large(x):
+        return x - 0.5*torch.log(2*torch.tensor([math.pi]).to(device)*x)         
+    res = torch.where(x > 5.0, _log_bessel_approx_large(x), _log_bessel_approx_0(x))
+    return res
+
+# Angle conversions
+def rad2bit_py(angles_rad):
+    return torch.tensor([torch.cos(angles_rad), torch.sin(angles_rad)]).to(device).T 
+
+def deg2bit_py(angles_deg):
+    angles_rad = angles_deg * torch.tensor([math.pi]).to(device) / 180              
+    return torch.tensor([torch.cos(angles_rad),torch.sin(angles_rad)]).to(device).T #torch.tensor([torch.cos(angles_rad),torch.sin(angles_rad)]).T 
+
+def rad2deg(angle_rad):
+    return angle_rad * 180 / torch.tensor([math.pi]).to(device)
+
+def bit2deg_py(angles_bit):
+    return (rad2deg(torch.atan2(angles_bit[:,1], angles_bit[:,0])) + 360) %360
+
+def deg2rad(angle_deg):
+    return angle_deg * torch.tensor([math.pi]).to(device) / 180 #angle_deg * torch.tensor([math.pi]) / 180 
+
+def maad_from_deg_py(y_pred, y_target):
+    return  rad2deg(torch.abs(torch.atan2(torch.sin(deg2rad(y_target - y_pred)).to(device),
+                                          torch.cos(deg2rad(y_target - y_pred)).to(device)).to(device)).to(device)) 
+
+```
+
 ## Training, Validation and Evaluation
-The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
+The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is different to the Keras implementation, where a single line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. After each training epoch the model is validated using the validation test set. Additionally, the averaged training loss and validation loss per batch are printed and stored after every epoch. Finally, the loss curves are plotted against the number of epochs to evaluate the model for fitting behaviour.
+
 ```markdown
 import time
 import copy
