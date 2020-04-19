@@ -449,4 +449,11 @@ def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
 ```
 
 ## Results
-
+| Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
+------------ | -------------|-----------|---------| -------|
+Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
+------------ | -------------|-----------|---------| -------|
+| Beyer et al., fixed k| | | | |
+| Ours, fixed k | | | | | 
+|Prokudin, Single von Mises | | | | | 
+|Ours, Single von Mises | | | | |
