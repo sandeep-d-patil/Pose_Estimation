@@ -1,5 +1,6 @@
 ## Pose Estimation using VGG-style network and InceptionResNet
 The link for the paper which is reproduced is [here](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf).
+## TO THE READER ON MONDAY -- BLOG STILL UNDER CONSTRUCTION. THIS IS NOT THE FINAL VERSION --- TO THE READER ON MONDAY
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
@@ -457,3 +458,6 @@ Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
 | Ours, fixed k | | | | | 
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
 |Ours, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070| | ** |
+
+
+![loss_curve](images/loss_curve_CAVIAR_predict.PNG)
