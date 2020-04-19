@@ -8,36 +8,15 @@ The proposed method for uncertainty quantification consists of using a VGG-style
 The paper was provided with code, which was written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
 # Understanding the original code
-As we both are complete novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
+As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
 
-We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The options explained below.
-
- 1. cosine loss with a fixed kappa value, where fixed kappa means that it is obtained by maximizing the log likelihood of the von Mises distribution rather than by prediction. (I believe this is cosine loss. Could be von Mises loss though. Have to check! 
-    * Initialization:
-       * The model is initialized using `BiternionVGG(loss_type='cosine', predict_kappa=False)`. 
-       * Run `_pick_loss` method thereby setting loss equal to `cosine_loss_tf`, which is the cosine distance.
-       * Define symbolic input(here, referring to keras Tensor) X shape using `Input()`.
-       * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
-       * Feed symbolic output, vgg_x, through a fully connected layer and normalize output with L2 normalization. The output is named `y_pred`. Essentially, `y_pred` now defines the path from the input until the final normalization layer.
-       * The feedforward is defined using `Model(input_x, y_pred)`. This maps the symbolic input X through the above defined network to the final output. The feedforward is defined as names `model`.
-       * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
-       * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs ar ethe loss function and optimizer. 
-    * Training:
-       * The training is called using the `fit` method corresponding the the `model` defined above; `model.fit(x_tr, y_tr, x_val, y_val, ..);
-       * The model is automatically trained. 
-          * After each batch the average loss and accuracy on that specific batch are printed. 
-          * After each epoch the entire validation set is run throug the model and the average loss and accuracy are printed
-          * Training is done after all epochs are ran.
-    * Fine-tuning Kappa using the validation set:
-       * The `finetune_kappa` method is called, since predict_kappa = False. 
-       * `model.predict(x_val)` is called for all validation samples and returns predicted biternion angles for all samples
-       * a vector is created containing values for kappa between 0 and max_kappa. 
-       * the mean von Mises log likelihood is calculated for each kappa on all predicted values.
-       * The kappa value that has the largest log likelihood is set as the fixed kappa value. Note that this kappa value applies to ALL images and is therefore not considered ideal.
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The model options are elaborated below.
+ 
+ ADD IMAGE OF THE INFORMATION FLOW THROUGH THE MODEL!?
   
-2. maximizing von Mises log likelihood with a predicted kappa value.
+2. Maximizing von Mises log likelihood with a predicted kappa value.
      * Initialization
-       * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`. Scenario with predict_kappa=False not required, right?!?!
+       * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`.
        * Run `_pick_loss` method thereby setting loss equal to `von Mises log likelihood`, which is the negative von Mises Log Likelihood with corresponding inputs: ground truth in biternion angles, predicted biternion angles and predicted kappa value.
        * Define symbolic input X shape using `Input()`.
        * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
@@ -76,64 +55,56 @@ The finite mixture model can be visualized as below. A complex distribution is g
 
 The input for the network is a RGB image and the output is 1x6 tensor having predicted angles of the pose of the object in the image, which are in the bit format. This is not a conventional output format and has effects on usage of the standard loss functions such as cross entropy loss function.
 
-<!---
 ```markdown
 class vgg_model(nn.Module):
-  def __init__(self, n_outputs=6, image_height=224, image_width=224, n_channels=3, 
-               conv_dropout_val=0.2, fc_dropout_val=0.5, fc_layer_size=512):
-    super(vgg_model, self).__init__()
-    self.conv_layer1 = nn.Sequential(
-        nn.Conv2d(3, 24, kernel_size=3, stride=1), 
-        nn.BatchNorm2d(24),         
-        nn.ReLU())                  
-    self.conv_layer2 = nn.Sequential(
-        nn.Conv2d(24, 24, kernel_size=3, stride=1), 
-        nn.BatchNorm2d(24), 
-        nn.MaxPool2d(2),            
-        nn.ReLU())
-    self.conv_layer3 = nn.Sequential(
-        nn.Conv2d(24, 48, kernel_size=3, stride=1),
-        nn.BatchNorm2d(48),
-        nn.ReLU())
-    self.conv_layer4 = nn.Sequential(      
-        nn.Conv2d(48, 48, kernel_size=3, stride=1),
-        nn.BatchNorm2d(48),
-        nn.MaxPool2d(2),
-        nn.ReLU())
-    self.conv_layer5 = nn.Sequential(
-        nn.Conv2d(48, 64, kernel_size=3, stride=1),
-        nn.BatchNorm2d(64),
-        nn.ReLU())
-    self.conv_layer6 = nn.Sequential(
-        nn.Conv2d(64, 64, kernel_size=3, stride=1),
-        nn.BatchNorm2d(64),
-        nn.ReLU())
-    self.dropout7 = nn.Sequential(
-        nn.Dropout2d(conv_dropout_val))
-    self.dense_layer8 = nn.Sequential(
-        nn.Flatten(),
-        nn.Linear(49*49*64, 512),       
-        nn.ReLU())                                                                        
-    self.dropout9 = nn.Dropout2d(fc_dropout_val)                                            
-    self.dense_layer10 = nn.Linear(512, n_outputs)
+  def __init__(self, n_outputs=1, conv_dropout_val=0.2, 
+               fc_dropout_val=0.5, fc_layer_size=512):
+      super(vgg_model, self).__init__()
+      self.VGG_backbone = nn.Sequential(
+          nn.Conv2d(3, 24, kernel_size=3, stride=1), 
+          nn.BatchNorm2d(24),         
+          nn.ReLU(),               
+          nn.Conv2d(24, 24, kernel_size=3, stride=1), 
+          nn.BatchNorm2d(24), 
+          nn.MaxPool2d(2),            
+          nn.ReLU(),
+          nn.Conv2d(24, 48, kernel_size=3, stride=1),
+          nn.BatchNorm2d(48),
+          nn.ReLU(),
+          nn.Conv2d(48, 48, kernel_size=3, stride=1),
+          nn.BatchNorm2d(48),
+          nn.MaxPool2d(2),
+          nn.ReLU(),
+          nn.Conv2d(48, 64, kernel_size=3, stride=1),
+          nn.BatchNorm2d(64),
+          nn.ReLU(),
+          nn.Conv2d(64, 64, kernel_size=3, stride=1),
+          nn.BatchNorm2d(64),
+          nn.ReLU(),
+          nn.Dropout2d(conv_dropout_val), 
+          nn.Flatten(),
+          nn.Linear(5*5*64, 512),      
+          nn.ReLU(),                                                          
+          nn.Dropout2d(fc_dropout_val))                                       
+      self.final_layer = nn.Linear(512, n_outputs)
+      self.kappa_predict = nn.Linear(512, 1)
+      self.ypred = nn.Linear(512, 2)
 
-  def forward(self, input, final_layer=False, l2_normalize_final=False): 
-    x = self.conv_layer1(input)
-    x = self.conv_layer2(x)
-    x = self.conv_layer3(x)
-    x = self.conv_layer4(x)
-    x = self.conv_layer5(x)
-    x = self.conv_layer6(x)
-    x = self.dropout7(x)
-    x = self.dense_layer8(x)
-    x = self.dropout9(x)
-    if final_layer:
-      x = self.dense_layer10(x)
+  def forward(self, input, predict_kappa=True, final_layer=False, l2_normalize_final=False): 
+      x_vgg = self.VGG_backbone(input)
+      if final_layer:
+          x = self.final_layer(x_vgg)
       if l2_normalize_final:
-        x = F.normalize(x,dim=1,p=2)    
-    return x  
+          x = F.normalize(x,dim=1,p=2)
+      if not final_layer:
+          if predict_kappa:
+              x_ypred = F.normalize(self.ypred(x_vgg), dim=1,p=2)
+              x_kappa = torch.abs(self.kappa_predict(x_vgg))
+              x = torch.cat((x_ypred, x_kappa), 1)
+          if not predict_kappa:
+              x = self.ypred(x_vgg)
+      return x
 ```
--->
 The summary of the model is as shown below with the details of number of trainable parameters and sizes of each layer.
 
 ![Summary](/images/summary.jpeg)
