@@ -179,31 +179,40 @@ if load_dataset == 'pascal':
     val_set = dataloader(x_val, y_val[:, 0:2])
     test_set = dataloader(x_test, y_test[:, 0:2])
 
-    train_loader = DataLoader(train_set, batch_size=15, shuffle=False, **kwargs)
-    val_loader = DataLoader(val_set, batch_size=15, **kwargs) 
-    test_loader = DataLoader(test_set, batch_size=15, **kwargs)
+    train_loader = DataLoader(train_set, batch_size=15, shuffle=False, `**kwargs`)
+    val_loader = DataLoader(val_set, batch_size=15, `**kwargs`) 
+    test_loader = DataLoader(test_set, batch_size=15, `**kwargs`)
 
 elif load_dataset == 'caviar':
       train_set = dataloader(xtr_cav, ytr_cav_bit[:, 0:2])
       val_set = dataloader(xval_cav, yval_cav_bit[:, 0:2])
       test_set = dataloader(xte_cav, yte_cav_bit[:, 0:2])
 
-      train_loader = DataLoader(train_set, batch_size=5, shuffle=False, **kwargs)
-      val_loader = DataLoader(val_set, batch_size=15, **kwargs) 
-      test_loader = DataLoader(test_set, batch_size=15, **kwargs)
+      train_loader = DataLoader(train_set, batch_size=5, shuffle=False, `**kwargs`)
+      val_loader = DataLoader(val_set, batch_size=15, `**kwargs`) 
+      test_loader = DataLoader(test_set, batch_size=15, `**kwargs`)
 
 elif load_dataset == 'towncentre':
       train_set = dataloader(xtr_tc, ytr_tc_bit[:, 0:2])
       val_set = dataloader(xval_tc, yval_tc_bit[:, 0:2])
       test_set = dataloader(xte_tc, yte_tc_bit[:, 0:2])
 
-      train_loader = DataLoader(train_set, batch_size=5, shuffle=True, **kwargs)
-      val_loader = DataLoader(val_set, batch_size=15, **kwargs) 
-      test_loader = DataLoader(test_set, batch_size=15, **kwargs)     
+      train_loader = DataLoader(train_set, batch_size=5, shuffle=True, `**kwargs`)
+      val_loader = DataLoader(val_set, batch_size=15, `**kwargs`) 
+      test_loader = DataLoader(test_set, batch_size=15, `**kwargs`)     
 
 data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader} 
 ```
-The airplane class data has been used to train, validate and test the model. The test dataset has 2247 images. The validation and testing datasets have 562 and 275 images respectively. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose.
+The distribution of the data is illustrated in the table below.
+
+ |  | CAVIAR-o | TownCentre | PASCAL3D+| 
+| ------|------ |------ | ------| 
+| Training| 10000000  |  1000000 |  2247| 
+| Validation |10000000 | 10000000| 562| 
+| Testing |10000000 |10000000 | 275 | 
+
+
+In case that kappa is not predicted by the model, the validation set is used to calculate the kappa. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. IS THIS TRUE?
 
 The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
 
