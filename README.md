@@ -220,7 +220,8 @@ In case that kappa is not predicted by the model, the validation set is used to 
 
 ![kappa](/images/kappa.JPG)
 
-In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can give us insight as to why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o, as the images are much more blurred. 
+# Visualisation of the dataset
+In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness. 
 
 ```markdown
 import matplotlib.pyplot as plt
@@ -234,7 +235,7 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
 ## Recoding required functions from Tensorflow to Pytorch
-The single density model requires a several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These functions include loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
+The single density model requires several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These original functions were not usable within our Pytorch environment, as they were written in either tensorflow or numpy. The functions included loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
 
 ``` markdown
 # Loss functions
@@ -307,7 +308,7 @@ def maad_from_deg_py(y_pred, y_target):
 
 ```
 
-## Training, Validation and Evaluation
+## Training and validation
 The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is different to the Keras implementation, where a single line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. After each training epoch the model is validated using the validation test set. Additionally, the averaged training loss and validation loss per batch are printed and stored after every epoch. Finally, the loss curves are plotted against the number of epochs to evaluate the model for fitting behaviour.
 
 ```markdown
@@ -390,6 +391,8 @@ def train(data_loaders, model, n_epochs, optimizer, criterion):
     np.savetxt('training_data/loss_val_TC_lr0-001_batch-100_epoch-50.csv', loss_val)
     return model
 ```
+## Evaluation 
+In addition to the training and validation script, the majority of the evaluation script is recoded to work inside the Pytorch environment. The implementation is provided below. 
 
 ```markdown
 def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
@@ -443,8 +446,7 @@ def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
         results['log_likelihood'] = log_likelihoods
     
     return results
-
 ```
 
 ## Results
-In order to verify that the entire Pytorch model is working appropriatly the network is trained with the pascal 3D+ datasets as explained earlier. The obtained result are not yet satisfactoy, which is concluded from the high errors and strange values for kappa. This is most likely the result of a small amount of training time and additionally some required parameter/code tuning here and there. Hence the results are not displayed. We will carry out more training of the data in coming days and present sufficient results for the CAVIAR-o, TownCentre and PASCAL3D+ datasets.
+
