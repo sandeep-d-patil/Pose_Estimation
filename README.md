@@ -226,39 +226,142 @@ plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
 ## Training, Validation and Evaluation
-The training algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
+The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
 ```markdown
-def train(train_loader, model, max_epochs, optimizer, criterion):
-  for epoch in range(max_epochs): 
-    running_loss = 0.0
-    for i, data in enumerate(train_loader):
-      local_batch, local_labels = data
-      # Transfer the batches to the GPU
-      local_batch, local_labels = local_batch.to(device), local_labels.to(device)
+import time
+import copy
 
-      # zero the parameter gradients
-      optimizer.zero_grad()
+def train(data_loaders, model, n_epochs, optimizer, criterion):
+    since = time.time()                       
+    best_model_weights = copy.deepcopy(model.state_dict())
+    best_loss = 99999
+    loss_train = []
+    loss_val = []
+    
+    for epoch in range(n_epochs):
+        print('Epoch {}/{}'.format(epoch, n_epochs - 1))
+        print('-' * 10)
+     
+        # switch between training & validation phase of epoch
+        for phase in ['train', 'val']: 
+            if phase == 'train':
+                model.train()    
+            else:
+                model.eval()      
+                
+            running_loss = 0.0    
+            for i, data in enumerate(data_loaders[phase]): 
+                x_input, y_true = data  
+                x_input, y_true = x_input.to(device), y_true.to(device) 
+                optimizer.zero_grad() # zero the parameter gradients
+                    
+                    # forward + loss
+                with torch.set_grad_enabled(phase == 'train'): 
+                    y_pred = model(x_input) # run the model
+                    loss = criterion(y_true, y_pred) # calculate the loss
+                 
+                    # backprop + optimization during the training phase
+                    if phase == 'train': 
+                        loss.backward(torch.ones_like(loss))
+                        optimizer.step()
+                running_loss += loss.item() * len(x_input) 
+               
+                # loss statistics
+            if phase == 'train':
+                epoch_loss = running_loss / len(data_loaders['train'].dataset)
+                loss_train.append(epoch_loss)
+                
+            elif phase == 'val':
+                epoch_loss = running_loss / len(data_loaders['val'].dataset)
+                loss_val.append(epoch_loss)
+                
+            print('{} Loss: {:.4f}'.format(
+                phase, epoch_loss))
+                
+            if phase == 'val' and epoch_loss < best_loss: # deep copy the model scoring best on validation loss
+                best_loss = epoch_loss
+                best_model_weights = copy.deepcopy(model.state_dict())
 
-      # forward + loss + backward + optimize
-      outputs = model(local_batch)
-      loss = cosine_loss_nn(local_labels, outputs)
+                torch.save({'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': loss}, 'training_data/model_weights_caviar.tar')
+                
+    time_elapsed = time.time() - since
+    print('Training complete in {:.0f}m {:.0f}s'.format(
+        time_elapsed // 60, time_elapsed % 60))
+    print('Best val loss: {:4f}'.format(best_loss))
 
-      loss.backward(torch.ones_like(loss))
-      optimizer.step()
+    # load best model weights
+    model.load_state_dict(best_model_weights)
 
-      # print statistics
-      running_loss += loss.item()
-      if i % 100 == 99:    
-          print('[%d, %5d] loss: %.3f' %
-                (epoch + 1, i + 1, running_loss / 100))
-          running_loss = 0.0
-
-  print('Finished Training')
-  PATH = 'data/model_weights_single_density.pth'
-  torch.save(model.state_dict(), PATH)
+    # plot and save losses
+    plt.plot(loss_train)
+    plt.plot(loss_val)
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend(['training loss', 'validation loss'])
+    plt.grid(True)
+    plt.show()
+    np.savetxt('training_data/loss_train_TC_lr0-001_batch-100_epoch-50.csv', loss_train)
+    np.savetxt('training_data/loss_val_TC_lr0-001_batch-100_epoch-50.csv', loss_val)
+    return model
 ```
 
-The code for the validation and evaluation are omitted as they still require some cleaning. As explained earlier, the validation set is used to tune parameter kappa and the evaluation set is to verify the fit of the model with regards to log likelihood and Mean Absolute Angular Deviation (MAAD).
+```markdown
+def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
+
+     # initialize empty tensors for concatenation
+    kappa_preds = torch.Tensor().to(device)  
+    loss = torch.Tensor().to(device)         
+    ypreds = torch.Tensor().to(device) 
+    
+    with torch.no_grad():
+    
+        # extract data and predict using the testset
+        for data in data_loaders['test']:
+            x, ytrue_bit_batch = data
+            x, ytrue_bit_batch = x.to(device), ytrue_bit_batch.to(device)
+            ypreds_batch = model(x)
+            ypreds = torch.cat((ypreds, ypreds_batch), 0)
+            
+        # convert predicted labels and ground truth labels
+        ytrue_bit = (data_loaders['test'].dataset.labels).to(device)
+        ytrue_deg = bit2deg_py(ytrue_bit)
+        ypreds_deg = bit2deg_py(ypreds)   
+
+        # determine kappa value
+        if predict_kappa:
+            kappa_preds = ypreds[:, 2:]       
+        elif not predict_kappa:
+            kappa_preds = torch.ones([ytrue_deg.shape[0], 1]) * self.fixed_kappa_value
+            
+        # calculate MAAD loss
+        loss = (maad_from_deg_py(ypreds_deg, ytrue_deg).float()).cpu()
+        
+    # bookkeeping
+    results = dict()
+    results['maad_loss'] = float(torch.mean(loss))
+    results['maad_loss_sem'] = float(sem(loss))
+    print("MAAD error : %f pm %fSEM" % (results['maad_loss'],
+                                            results['maad_loss_sem']))  
+    results['mean_kappa'] = float(torch.mean(kappa_preds))
+    results['std_kappa'] = float(torch.std(kappa_preds,unbiased=False))
+    
+    log_likelihoods = (von_mises_log_likelihood_py(ytrue_bit[:,0:2], ypreds[:,0:2], kappa_preds)).cpu()
+
+    results['log_likelihood_mean'] = float(torch.mean(log_likelihoods))
+    results['log_likelihood_sem'] = float(sem(log_likelihoods, axis=None)) 
+    print("log-likelihood : %f pm %fSEM" % (results['log_likelihood_mean'], 
+                                                results['log_likelihood_sem']))
+    if return_per_image:                      
+        results['point_preds'] = bit2deg_py(deg2bit_py(ypreds_deg))
+        results['maad'] = loss
+        results['log_likelihood'] = log_likelihoods
+    
+    return results
+
+```
 
 ## Results
 In order to verify that the entire Pytorch model is working appropriatly the network is trained with the pascal 3D+ datasets as explained earlier. The obtained result are not yet satisfactoy, which is concluded from the high errors and strange values for kappa. This is most likely the result of a small amount of training time and additionally some required parameter/code tuning here and there. Hence the results are not displayed. We will carry out more training of the data in coming days and present sufficient results for the CAVIAR-o, TownCentre and PASCAL3D+ datasets.
