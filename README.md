@@ -4,14 +4,14 @@ The link for the paper which is reproduced is [here](https://eccv2018.org/openac
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
-The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first two will be elaborated. The Pascal 3D+ dataset is used as testbed to study the general object pose estimation. The CAVIAR-o and TownCentre datasets present a challenging task of corase gaze estimation as the images are of low resolution which are obtained from surveillance camera videos. In the CAVIAR dataset, the occulded the head instances are considered for testing. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
+The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first variant will be elaborated. The Pascal 3D+ dataset is used as testbed to study the general object pose estimation. The CAVIAR-o and TownCentre datasets present a challenging task of corase gaze estimation as the images are of low resolution which are obtained from surveillance camera videos. In the CAVIAR dataset, the occulded the head instances are considered for testing. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
 
 The paper was provided with code, which was written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
 # Understanding the original code
 As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
 
-We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The two different model options are: first, using von Mises log likelihood loss with a predicted kappa value and second, using von Mises log likelihood loss and calculate kappa by maximizing the von Mises log likelihood. These scenarios are elaborated below.
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. Therefore, the propagation of information through the model is elaborated below. This propagation is dependent on which model type you run. The two model options are: first, using von Mises log likelihood loss with a predicted kappa value and second, using von Mises log likelihood loss and calculate kappa by maximizing the von Mises log likelihood. 
 
 * Initialization
     * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`.
@@ -25,10 +25,21 @@ We started out by learning how a neural network is built and trained within Tens
     * In case of finding kappa by maximizing the von Mises log likelihood:
       * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
     * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs are the loss function and optimizer. 
-* Training:
-    * exactly the same as with model number 1
-* Validation:
-    * validation is now solely for the purpose of checking the accuracy and loss after every epoch. Check tomorrow more securely!
+* Training & validation:
+    * The training is called using the `fit` method corresponding the the `model` defined above; 
+    * The model is automatically trained depending on the provided training parameters, e.g. number of epochs. 
+      * After each batch the average loss of that specific batch is printed. 
+      * After each epoch the entire validation set is run throug the model and the average loss is printed
+      * Training is done after all epochs are run.    
+    * If not predicting kappa; fine-tuning Kappa using the validation set:
+      * The `finetune_kappa` method is called, since predict_kappa = False. 
+      * `model.predict` is called for all validation samples and returns predicted biternion angles
+      * a vector is created containing values for kappa between 0 and `max_kappa`. 
+      * the mean von Mises log likelihood is calculated for each kappa on all predicted values.
+      * The kappa value that has the largest log likelihood is set as the fixed kappa value. Note that this kappa value applies to all images and is therefore not considered ideal.
+* Evaluation
+
+With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion.
 
 # Setting up the Google Colab environment
 The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
@@ -41,12 +52,12 @@ os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
 ```
 
 ## Network Architecture
-The architecture of the network is similar between the single density and finite mixture models. The network can be considered very deep and sequential with 24 layers. There are 5 convolution layers used which have 3x3 kernel sizes throughout. The volume reduction is taken care by the max pooling layer of size 2x2 which is used twice in the network. The Batch normalizations are used to normalize the values of the running averages which are 6 in number . ReLU (Rectified Linear Unit  is used as the activation functions . The Layers are flattened in the end using Linear layer and then Dropout is carried out in order to obtain more accurate weights of the network. The Network when used for training a 224x224x3 image, it has 78,781,822 trainable parameters. The total parameter size is about 300 MB. The network can be visualized as shown below.
+The architecture of the network is similar between the single density and finite mixture models. The network can be considered very deep and sequential with 24 layers. There are 5 convolution layers used which have 3x3 kernel sizes throughout. The volume reduction is taken care by the max pooling layer of size 2x2 which is used twice in the network. The Batch normalizations are used to normalize the values of the running averages which are 6 in number . ReLU (Rectified Linear Unit  is used as the activation functions. The Layers are flattened in the end using Linear layer and then Dropout is carried out in order to obtain more accurate weights of the network. The Network when used for training a 224x224x3 image, it has 78,781,822 trainable parameters. The total parameter size is about 300 MB. The network can be visualized as shown below.
 
 The single mixture model can be visualized as below. There is only one simple von mises distribution used to obtain the pose of the object. Hence only one distribution can be seen as the output in the network.
 ![singlemixture](images/singlemixture.JPG)
 
-The finite mixture model can be visualized as below. A complex distribution is generated by summing up multiple distribution in the case of finite mixture model. Here each component is a simple von mises distribution. Hence a finite number of distribution can be seen in the output of the network.
+The finite mixture model can be visualized as below. A complex distribution is generated by summing up multiple distribution in the case of finite mixture model. Here each component is a simple von mises distribution. Hence a finite number of distribution can be seen in the output of the network. It has been decided not to reproducde this model in Pytorch.
 ![Finitemixture](images/Finitemixture.png)
 
 The input for the network is a RGB image of size 224x224 or 50x50 for respectively the PASCAL3D+ and Towncentre/CAVIAR-o datasets. The network has two outputs, containing the biternion azimuth/gaze angle, and additionally a third when kappa is predicted by the network. The VGG backbone of the network is provided below. Note the influence of `predict_kappa` in the forward function on the information propagation in the network.
@@ -475,7 +486,7 @@ Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
 | Beyer et al., fixed k| 5.74deg +/- 0.13 | 0.262 +/- 0.031| 22.8deg +/- 1.0 |-0.89 +/- 0.06|
 | Ours, fixed k | | | | | 
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
-|Ours, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070| | ** |
+|Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070|  24.4deg +/- 1.08 | -0.78 +/- 0.06**|
 
 
 ![loss_curve](images/loss_curve_CAVIAR_predict.PNG)
