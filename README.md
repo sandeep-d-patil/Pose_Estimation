@@ -392,6 +392,25 @@ def train(data_loaders, model, n_epochs, optimizer, criterion):
     np.savetxt('training_data/loss_val_TC_lr0-001_batch-100_epoch-50.csv', loss_val)
     return model
 ```
+## Finetuning kappa
+In case `predict_kappa` is set to False, the value for kappa will be calculated after training has finished by the `finetune_kappa` script below. It calculates the kappa by maximizing the log-likelihood. The script was rewritten in order to be used in the Pytorch environment.
+``` markdown
+def finetune_kappa(x,y_bit,max_kappa = 1000.0, verbose =False):
+    ytr_preds_bit = model(x)[:,0:2]
+    kappa_vals = torch.arange(0,max_kappa,1.0).to(device)
+    log_likelihoods = torch.zeros(kappa_vals.shape).to(device)
+    for i,kappa_val in enumerate(kappa_vals):
+        kappa_preds = torch.ones([x.shape[0], 1]).to(device) * kappa_val       
+        log_likelihoods[i] = torch.mean(von_mises_log_likelihood_np_py(y_bit, ytr_preds_bit,kappa_preds))
+        if verbose:
+            print("kappa: %f, log-likelihood: %f" % (kappa_val,log_likelihoods[i]))
+    max_ix = torch.argmax(log_likelihoods)
+    fixed_kappa_value = kappa_vals[max_ix]
+    if verbose:
+        print("best kappa : %f" % fixed_kappa_value)
+    return fixed_kappa_value
+```
+
 ## Evaluation 
 In addition to the training and validation script, the majority of the evaluation script is recoded to work inside the Pytorch environment. The implementation is provided below. 
 
