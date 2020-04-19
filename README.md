@@ -30,9 +30,6 @@ We started out by learning how a neural network is built and trained within Tens
     * Validation:
        * validation is now solely for the purpose of checking the accuracy and loss after every epoch. Check tomorrow more securely!
 
-
-
-
 # Setting up the Google Colab environment
 The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
 
@@ -154,7 +151,6 @@ yval_tc_bit = torch.tensor(yval_tc_bit[:])
 xte_tc = (torch.tensor(xte_tc[:])).permute(0, 3, 1, 2).float() 
 yte_tc_bit = torch.tensor(yte_tc_bit[:])
 
-
 class dataloader(Dataset):
   def __init__(self, samples, labels):
     self.labels = labels
@@ -212,24 +208,22 @@ The distribution of the data is illustrated in the table below.
 | Testing |10000000 |10000000 | 275 | 
 
 
-In case that kappa is not predicted by the model, the validation set is used to calculate the kappa. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. IS THIS TRUE?
-
-The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
+In case that kappa is not predicted by the model, the validation set is used to calculate the kappa depending using the von Mises log likelihood criteria. The kappa value is a measure of concertration of the data around the mean value of the distribution. The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
 
 ![kappa](/images/kappa.JPG)
 
-The Pascal 3D+ datasets are visualized below. 
+In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can give us insight as to why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o, as the images are much more blurred. 
+
 ```markdown
 import matplotlib.pyplot as plt
 
 sample = next(iter(train_loader))
 image, label = sample
 
-grid = torchvision.utils.make_grid(image[0:10], nrow=10 )
+grid = torchvision.utils.make_grid(image[1], nrow=1 )
 plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
 ```
-![loadimages](/images/loadimage.jpeg)
 
 ## Training, Validation and Evaluation
 The training algorithm used in the Pytorch implemenation is illustrated below. This is much different to the Keras implementation, where 1 line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. 
