@@ -4,32 +4,31 @@ The link for the paper which is reproduced is [here](https://eccv2018.org/openac
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
-The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where strong assumptions are made about the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first two will be elaborated. The Pascal 3D+ dataset is used as testbed to study the general object pose estimation. The CAVIAR-o and TownCentre datasets presents a challenging task of corase gaze estimation as the images are of low resolution which are obtained from surveillance camera videos. In the CAVIAR dataset, the occulded the head instances are considered for testing. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
+The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first two will be elaborated. The Pascal 3D+ dataset is used as testbed to study the general object pose estimation. The CAVIAR-o and TownCentre datasets present a challenging task of corase gaze estimation as the images are of low resolution which are obtained from surveillance camera videos. In the CAVIAR dataset, the occulded the head instances are considered for testing. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
 
 The paper was provided with code, which was written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
 # Understanding the original code
-As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
+As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
 
-We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The model options are elaborated below.
- 
- ADD IMAGE OF THE INFORMATION FLOW THROUGH THE MODEL!?
-  
-2. Maximizing von Mises log likelihood with a predicted kappa value.
-     * Initialization
-       * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`.
-       * Run `_pick_loss` method thereby setting loss equal to `von Mises log likelihood`, which is the negative von Mises Log Likelihood with corresponding inputs: ground truth in biternion angles, predicted biternion angles and predicted kappa value.
-       * Define symbolic input X shape using `Input()`.
-       * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
-       * Feed symbolic output, `vgg_x`, through a fully connected layer with 2 outputs (angle prediction) and normalize output with L2 normalization. 
-       * Feed symbolic output, `vgg_x`, ALSO through a fully connected layer with 1 output (kappa prediction) and make the output absolute. 
-       * Since predict_kappa = True, the feedforward is defined using `Model(input_X, concatenate[y_pred, kappa_pred])`. This maps the symbolic input X through the above defined network to the final output. Note that this time the network splits up after the VGG backbone into two different dense layers followed by two different lambda layers. The outputs are then combined again forming 1 output. The feedforward is defined as names `model`.
-       * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
-       * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs are the loss function and optimizer. 
-    * Training:
-       * exactly the same as with model number 1
-    * Validation:
-       * validation is now solely for the purpose of checking the accuracy and loss after every epoch. Check tomorrow more securely!
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API that is used. The propagation of information throughout the model is dependent on which model you run. The two different model options are: first, using von Mises log likelihood loss with a predicted kappa value and second, using von Mises log likelihood loss and calculate kappa by maximizing the von Mises log likelihood. These scenarios are elaborated below.
+
+* Initialization
+    * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`.
+    * Run `_pick_loss` method thereby setting loss equal to `von Mises log likelihood`, which is the negative von Mises Log Likelihood with corresponding inputs: ground truth in biternion angles, predicted biternion angles and predicted kappa value.
+    * Define symbolic input X shape using `Input()`.
+    * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
+    * Feed symbolic output, `vgg_x`, through a fully connected layer with 2 outputs (biternion angle prediction) and normalize output using L2 normalization. 
+    * Feed symbolic output, `vgg_x`, additionally through a fully connected layer with 1 output (kappa prediction) and make the output absolute. 
+    * In case of predicting kappa using the network:
+      * Since predict_kappa = True, the feedforward is defined using `Model(input_X, concatenate[y_pred, kappa_pred])`. This maps the symbolic input X through the above defined network to the final output. Note that this time the network splits up after the VGG backbone into two different dense layers followed by two different lambda layers. The outputs are then combined again forming 1 output. The feedforward is defined as names `model`.
+    * In case of finding kappa by maximizing the von Mises log likelihood:
+      * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
+    * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs are the loss function and optimizer. 
+* Training:
+    * exactly the same as with model number 1
+* Validation:
+    * validation is now solely for the purpose of checking the accuracy and loss after every epoch. Check tomorrow more securely!
 
 # Setting up the Google Colab environment
 The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
