@@ -456,4 +456,4 @@ Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
 | Beyer et al., fixed k| 5.74deg +/- 0.13 | 0.262 +/- 0.031| 22.8deg +/- 1.0 |-0.89 +/- 0.06|
 | Ours, fixed k | | | | | 
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
-|Ours, Single von Mises | 5.21deg +/- 0.15 | 0.717 +/- 0.070| | |
+|Ours, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070| | ** |
