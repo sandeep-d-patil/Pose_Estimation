@@ -520,7 +520,7 @@ To compare the error values in the Table 2. we have to achieve a comparable mode
 
 ## insert the keras and pytorch model results for different datasets
 
-Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood losses.
+Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood errors. The MAAD error refers to the mean absolute angular deviation which is a widely used metric for angular regression tasks. The log likelihood error is a widely accepted scoring rule for assessing the quality of probabilistic predictions. 
 
 ## Reproduction of Table 2 from authors paper
 After running models in different scenarios we finalized on the batch size of ... , epoch size of ... and learning rate of ... in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
