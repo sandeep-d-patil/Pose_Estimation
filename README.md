@@ -516,8 +516,17 @@ def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
 The results that are obtained with our single density Pytorch implementation are discussed and compared with the original Tensorflow model of the author. The CAVIAR-o and TownCentre datasets, that were mentioned earlier, are compared and the Table 2 of the [Sergey Prokudin et al](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf) paper is discussed. 
 
 Apart from the attempt to reproduce the results from the table, the following aspects of losses and evaluation metrics are compared.
-1. Effects of losses with variation in batch sizes during training.
+1. Influence of shuffling the data during training
 2. Comparison of Losses and error  models and our pytorch model.
+3. Effects of losses with variation in batch sizes during training.
+
+## 1. Influence of shuffling
+The training data can either be fed in a constant sequence to the network each epoch, or be picked randomly. The latter is called shuffling and its effect is evaluated on the TownCentre dataset. Generally speaking, shuffling the data has a generalizing effect, leading to improved results. The table below shows the values for the evaluation metrics MAAD error and log likelihood for a shuffled and unshuffled training set. It can be observed the MAAD error is worse for unshuffled training, whereas the log-likelihood is very similar. Looking at the learning curves, displayed below the table, the shuffled and unshuffled variant have a very similar training loss curve. However, the validation loss curve is constantly lower and less constant. 
+
+|            | MAAD error     |  Log-likelihood |
+|------------|----------------|:---------------:|
+| No shuffle | 31.85 +/- 1.22 | -0.92 +/- 0.034 |
+| Shuffle    | 25.97 +/- 1.18 | -0.92 +/- 0.077 |
 
 ## 1. Influence of varying batch size
 The loss curves in training data and validating data provides information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a some important training parameters, such as batch size. Therefore, we have experimented with different batch sizes for all datasets in order to produce good results.
@@ -530,7 +539,9 @@ align="center">
 align="center">
 Figure: loss variation with different batch sizes
 </p>
-To illustrate the importance of batch size the above image shows that having a smaller batch size inreases the loss fluctuations over each epoch, whereas with larger batch sizes the loss fluctuations decrease. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf).  can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
+To influence of batch size is illustrated in the image above, showing that a smaller batch size inreases the loss fluctuations over each epoch, whereas with larger batch sizes the loss fluctuations decrease. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf). 
+
+The table below shows a comparison for different batch sizes for the TownCentre and CAVIAR-o dataset when predicting the biternion angles and kappa. The following settings are adopted for the model in the entire evaluation phase, as they were already filled in for the original Tensorflow model;  `learning rate = 1e-3`, `epsilon = 1.0e-7`, `beta1 = 0.9`, `beta2 = 0.999`, `conv_dropout = 0.2`, `fc_dropout = 0.5` and `vgg_fc_layer_size = 512`. 
 
 <p 
 float="left">
@@ -549,7 +560,6 @@ Figure:
 |                            |             |                |                |                |                |                 |                |
 
 
-
 ## 2. Comparison between our Pytorch implementation and the original Tensorflow code
 To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
 
@@ -562,10 +572,7 @@ After running models in different scenarios we finalized on the batch size of ..
 We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
 
 
-|            | MAAD error     |  Log-likelihood |
-|------------|----------------|:---------------:|
-| No shuffle | 31.85 +/- 1.22 | -0.92 +/- 0.034 |
-| Shuffle    | 25.97 +/- 1.18 | -0.92 +/- 0.077 |
+
 
 
 | Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
@@ -573,9 +580,9 @@ We can observe that the errors for CAVIAR-o dataset is less than 6 percent and e
 Criteria: | MAAD | log-likelihood | MAAD | log-likelihood |
 ------------ | -------------|-----------|---------| -------|
 | Beyer et al., fixed k| 5.74deg +/- 0.13 | 0.262 +/- 0.031| 22.8deg +/- 1.0 |-0.89 +/- 0.06|
-| Ours, fixed k | | | | | 
+| Ours, fixed k |7.5 +/- 0.15 | 0.11 +/- 0.03| 25.06 +/- 0.99 | -0.93 +/- 0.036 | 
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
-|Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070|  24.4deg +/- 1.08 | -0.78 +/- 0.06**|
+|Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15** | **0.717 +/- 0.070**|  **24.4deg +/- 1.08** | **-0.78 +/- 0.06**|
 
 Hence the results in the paper are reproduced.
 
