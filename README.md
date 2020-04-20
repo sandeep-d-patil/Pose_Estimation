@@ -130,14 +130,14 @@ CAVIAR-o dataset contains images of partially occluded heads , the images have b
 
 <p 
 align="center">
-  <img width="100" height="100" src=images/caviardata.png>
+  <img src="images/caviardata.png" width="100" height="100" />
 </p>
 
 Towncentre dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels. The towncentre data can be downloaded [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The towncentre data is visualized as below.
 
 <p 
 align="center">
-  <img width="400" height="100" src=images/towncentredata.png>
+  <img src="images/towncentredata.png" width="400" height="100" />
 </p>
 
 The towncentre dataset and caviar datasets required some preprocessing as the downloaded file format (i.e .bz2 format) and input format (.pkl.gz format) needed to run the model are different, for this we referred to the [Lucas Beyers](https://github.com/lucasb-eyer/BiternionNet/tree/e0cf7d29bfa177e4d8eded463e2c8304b78e2984) repository in order to find the source and methods required to download and preprocess the data. After preprocessing the data is then converted to pytorch tensors using `torch.tensor(..)` and `.permute(..)` methods so as to input them into the dataloader readable format. The data downloaded for each dataset respectively should be placed in the root folder before running the dataloading process.
