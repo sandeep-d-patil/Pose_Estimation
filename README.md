@@ -324,6 +324,8 @@ def maad_from_deg_py(y_pred, y_target):
                                           torch.cos(deg2rad(y_target - y_pred)).to(device)).to(device)).to(device)) 
 
 ```
+### Loss Function
+The loss function used here is `log_likelihood` loss the 
 
 ### Training and validation
 The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is different to the Keras implementation, where a single line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. After each training epoch the model is validated using the validation test set. Additionally, the averaged training loss and validation loss per batch are printed and stored after every epoch. Finally, the loss curves are plotted against the number of epochs to evaluate the model for fitting behaviour.
