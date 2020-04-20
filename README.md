@@ -534,14 +534,22 @@ To illustrate the importance of batch size the above image shows that having a s
 
 <p 
 float="left">
-<img src="images/caviar_batch-25_kappa-true.png" width="300" />
-<img src="images/caviar_batch-50_kappa-true.png" width="300" /> 
-<img src="images/caviar_batch-100_kappa-true.png" width="300" />
+<img src="images/caviar_batch-100_kappa-true.png" width="370" />
   </p>
 <p 
 align="center">
 Figure: 
 </p>
+
+|                            | Batch size: |       25       | 50             | 100            | 25             | 50              | 100            |
+|----------------------------|-------------|:--------------:|----------------|----------------|----------------|-----------------|----------------|
+|                            | Epochs      | MAAD error     | MAAD error     | MAAD error     | Log-likelihood | Log-likelihood  | Log-likelihood |
+| CAVIAR-o - predict kappa   | 200         | 5.76 +/- 0.17  | 6.03 +/- 0.16  | 5.51 +/- 0.16  | 0.51 +/- 0.09  | 0.56 +/- 0.06   | 0.57 +/- 0.09  |
+| TownCentre - predict kappa | 50          | 24.44 +/- 1.08 | 24.85 +/- 1.15 | 25.97 +/- 1.18 | -0.78 +/- 0.06 | -0.78 +/- 0.067 | -0.92 +/- 0.08 |
+|                            |             |                |                |                |                |                 |                |
+
+
+
 ## 2. Comparison between our Pytorch implementation and the original Tensorflow code
 To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
 
@@ -552,13 +560,6 @@ Here we can see that the models are able to fit the data with comparable losses 
 ## Reproduction of Table 2 from authors paper
 After running models in different scenarios we finalized on the batch size of ... , epoch size of ... and learning rate of ... in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
 We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
-|                            | Batch size: |       25       | 50             | 100            | 25             | 50              | 100            |
-|----------------------------|-------------|:--------------:|----------------|----------------|----------------|-----------------|----------------|
-|                            | Epochs      | MAAD error     | MAAD error     | MAAD error     | Log-likelihood | Log-likelihood  | Log-likelihood |
-| CAVIAR-o - predict kappa   | 200         | 5.76 +/- 0.17  | 6.03 +/- 0.16  | 5.51 +/- 0.16  | 0.51 +/- 0.09  | 0.56 +/- 0.06   | 0.57 +/- 0.09  |
-| TownCentre - predict kappa | 50          | 24.44 +/- 1.08 | 24.85 +/- 1.15 | 25.97 +/- 1.18 | -0.78 +/- 0.06 | -0.78 +/- 0.067 | -0.92 +/- 0.08 |
-|                            |             |                |                |                |                |                 |                |
-
 
 
 |            | MAAD error     |  Log-likelihood |
