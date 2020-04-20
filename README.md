@@ -599,15 +599,15 @@ The table below shows a comparison for different batch sizes for the TownCentre 
 | TownCentre - predict kappa | 50          | 24.44 +/- 1.08 | 24.85 +/- 1.15 | 25.97 +/- 1.18 | -0.78 +/- 0.06 | -0.78 +/- 0.067 | -0.92 +/- 0.08 |
 |                            |             |                |                |                |                |                 |                |
 
-The learning curve for the CAVIAR-o set with batch size 100 is illustrated below to gain a bit more feeling for how the learning curves progress. 
+The loss curves for the CAVIAR-o set with batch size 100 is illustrated below to get a bit more feeling of how the loss curve for the CAVIAR set progresses.
 
 <p 
-float="left">
+float="center">
 <img src="images/caviar_batch-100_kappa-true.png" width="370" />
   </p>
 <p 
 align="center">
-Figure: 
+Figure: Learning curve for the CAVIAR-o dataset with batch size 100 and 200 epochs. 
 </p>
 
 ## 3. Reproduction of Table 2 from authors paper
