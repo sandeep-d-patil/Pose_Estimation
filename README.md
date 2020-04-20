@@ -31,7 +31,7 @@ We started out by learning how a neural network is built and trained within Tens
 A visualisation of the information flow as extracted from the Keras code is illustrated below.
 
 <p align="center">
-  <img src = "images/Network_architecture_v2.png" height = "100" />
+  <img src = "images/Network_architecture_v2.png" height = "500" />
   </p>
 
 ## Implementation in Pytorch
