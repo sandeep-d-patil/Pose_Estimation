@@ -514,7 +514,7 @@ float="left">
 <img src="/images/caviar_batch-25_kappa-true.png" width="300" />
 <img src="/images/caviar_batch-50_kappa-true.png" width="300" /> 
 <img src="/images/caviar_batch-100_kappa-true.png" width="300" />
-</p>
+  </p>
 
 ## 2. Comparison of Losses and error authors keras models and our pytorch model
 To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
