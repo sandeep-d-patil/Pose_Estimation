@@ -3,22 +3,29 @@ The link for the paper which is reproduced is [here](https://eccv2018.org/openac
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
-The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first variant will be elaborated. The data used for pose estimation are the PASCAL3D+, TownCentre and CAVIAR-o datasets. The CAVIAR-o and TownCentre datasets present a challenging task of corase gaze estimation as the images are of low resolution, which are obtained from surveillance camera videos. In the CAVIAR dataset, the images with occulded head instances are considered for the dataset. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
+The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first variant will be elaborated. The data used for pose estimation are the PASCAL3D+, TownCentre and CAVIAR-o datasets. The CAVIAR-o and TownCentre datasets present a challenging task of coarse gaze estimation as the images are of low resolution, as they are obtained from surveillance camera videos. In the CAVIAR dataset, the images with occulded head instances are only considered for the dataset. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
 
-* EXPLAIN HOW THE PAPER PREDICTS THIS --> EXPLAIN BITERNION ANGLES TO SOLVE CONTINUOUS PROBLEM + KAPPA!
-* ADD MORE INTUITIVE EXPLANATION OF MEANING KAPPA!
+### Biternion representation
+As head pose is about angular orientation it is generally hard to find a sufficient loss function for training. This is because angular orientation has a periodic nature and is therefore discontinuous. Predicted values close to the ground truth can be reset to the next period and be penalized very badly in conventional loss function. This paper solves that problem by using Biternion networks, which is a different parameterization of angles removing this periodic aspect. 
 
-### Notes
+### Concentration parameter kappa
+The concentration parameter kappa is a measure of concertration of the data around the mean, or predicted, value of the distribution. The influence of kappa on a distribution is illustrated below (image taken from original report). As can be observed, higher kappa value concentrates the data towards the centre of the distribution making a prediction more certain.
+![kappa](/images/kappa.JPG)
 
+
+### Original code
 The paper is provided with code, which is written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
 ## Understanding the original code in Keras
 As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation provided in the paper for us to understand what is exactly happening.
 
+### Information propagation
 We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API and Tensorflow syntax that is used. A good place to start was to pinpoint the propagation of information through the model. This propagation is dependent on which model type is run, of which there are two. 
 
 1. Use the network to predict the biternion angles, as well as the kappa value. 
 1. Use the network to solely predict the biternion angles, followed by calculating kappa by maximizing the von Mises log likelihood. 
+
+
 
 A visualisation of the information flow as extracted from the Keras code is illustrated below.
 
@@ -93,12 +100,13 @@ class vgg_model(nn.Module):
 
 ### Datasets
 The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre datasets and they are divided into three parts namely training , validation and testing. the distribution are as shown as follows.
-
+<p align="center">
 Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre
 ------------ | -------------|-----------|---------|
 Train set | 2247 | 10802 | 6916
 Validation set| 562 |5444 | 874
 Test set  | 275 |5445 | 904
+</p>
 
 [PASCAL 3D+](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view) contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. The dataset is visualized as below.
 
@@ -217,12 +225,7 @@ elif load_dataset == 'towncentre':
 
 data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader} 
 ```
-
-In case that kappa is not predicted by the model, the validation set is used to calculate the kappa depending using the von Mises log likelihood criteria. The kappa value is a measure of concertration of the data around the mean value of the distribution. The visualization of variation of kappa values for a distribution can be seen below. Higher the kappa value concentrates the data towards the centre of the distribution.
-
-![kappa](/images/kappa.JPG)
-
-# Visualisation of the dataset
+### Visualisation of the dataset
 In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness. 
 
 ```markdown
@@ -236,8 +239,8 @@ plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
-## Recoding required functions from Tensorflow to Pytorch
-The single density model requires several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These original functions were not usable within our Pytorch environment, as they were written in either tensorflow or numpy. The functions included loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
+### Recoding supportive functions from Tensorflow to Pytorch
+The single density model requires several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These original functions were not usable within our Pytorch environment, as they were written in either tensorflow, Keras and/or numpy. The functions included loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
 
 ``` markdown
 # Loss functions
@@ -310,7 +313,7 @@ def maad_from_deg_py(y_pred, y_target):
 
 ```
 
-## Training and validation
+### Training and validation
 The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is different to the Keras implementation, where a single line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. After each training epoch the model is validated using the validation test set. Additionally, the averaged training loss and validation loss per batch are printed and stored after every epoch. Finally, the loss curves are plotted against the number of epochs to evaluate the model for fitting behaviour.
 
 ```markdown
@@ -393,8 +396,9 @@ def train(data_loaders, model, n_epochs, optimizer, criterion):
     np.savetxt('training_data/loss_val_TC_lr0-001_batch-100_epoch-50.csv', loss_val)
     return model
 ```
-## Finetuning kappa
-In case `predict_kappa` is set to False, the value for kappa will be calculated after training has finished by the `finetune_kappa` script below. It calculates the kappa by maximizing the log-likelihood. The script was rewritten in order to be used in the Pytorch environment.
+### Finetuning kappa
+When the model is not set to make a prediction for kappa, i.e. `predict_kappa=False`, the value for kappa will be calculated after training and validating by running `finetune_kappa` script below. It calculates the kappa by maximizing the log-likelihood. The script was provided in the original Tensorflow code and was rewritten in order to be used within the Pytorch environment.
+
 ``` markdown
 def finetune_kappa(x,y_bit,max_kappa = 1000.0, verbose =False):
     ytr_preds_bit = model(x)[:,0:2]
@@ -412,7 +416,7 @@ def finetune_kappa(x,y_bit,max_kappa = 1000.0, verbose =False):
     return fixed_kappa_value
 ```
 
-## Evaluation 
+### Evaluation 
 In addition to the training and validation script, the majority of the evaluation script is recoded to work inside the Pytorch environment. The implementation is provided below. 
 
 ```markdown
