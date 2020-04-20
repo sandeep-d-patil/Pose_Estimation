@@ -591,14 +591,6 @@ To influence of batch size is illustrated in the image above, showing that a sma
 
 The table below shows a comparison for different batch sizes for the TownCentre and CAVIAR-o dataset when predicting the biternion angles and kappa. The following settings are adopted for the model in the entire evaluation phase, as they were already filled in for the original Tensorflow model;  `learning rate = 1e-3`, `epsilon = 1.0e-7`, `beta1 = 0.9`, `beta2 = 0.999`, `conv_dropout = 0.2`, `fc_dropout = 0.5` and `vgg_fc_layer_size = 512`. The following observations are made. First, the TownCentre set scores better on the evaluation metrics MAAD error and log-likelihood when decreasing batch size. Second, for the CAVIAR-o set the batch size influence is hard to tell as different batch sizes score best on different metrics.
 
-<p 
-float="left">
-<img src="images/caviar_batch-100_kappa-true.png" width="370" />
-  </p>
-<p 
-align="center">
-Figure: 
-</p>
 
 |                            | Batch size: |       25       | 50             | 100            | 25             | 50              | 100            |
 |----------------------------|-------------|:--------------:|----------------|----------------|----------------|-----------------|----------------|
@@ -607,6 +599,16 @@ Figure:
 | TownCentre - predict kappa | 50          | 24.44 +/- 1.08 | 24.85 +/- 1.15 | 25.97 +/- 1.18 | -0.78 +/- 0.06 | -0.78 +/- 0.067 | -0.92 +/- 0.08 |
 |                            |             |                |                |                |                |                 |                |
 
+The learning curve for the CAVIAR-o set with batch size 100 is illustrated below to gain a bit more feeling for how the learning curves progress. 
+
+<p 
+float="left">
+<img src="images/caviar_batch-100_kappa-true.png" width="370" />
+  </p>
+<p 
+align="center">
+Figure: 
+</p>
 
 ## 3. Reproduction of Table 2 from authors paper
 After running the Pytorch model in different configurations we finalized on the following settings for the datasets:
