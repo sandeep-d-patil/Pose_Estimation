@@ -508,9 +508,9 @@ align="center">
 From the above image we can see that having a lower batch size the loss fluctuations over each epoch is high and as and when the batch size is increased the loss fluctuation is decreased. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf) We can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
 
 <p float="left">
-  <img src="/images/caviar_batch-25_kappa-true.png" width="270" />
-  <img src="/images/caviar_batch-50_kappa-true.png" width="270" /> 
-  <img src="/images/caviar_batch-100_kappa-true.png" width="270" />
+  <img src="/images/caviar_batch-25_kappa-true.png" width="300" />
+  <img src="/images/caviar_batch-50_kappa-true.png" width="300" /> 
+  <img src="/images/caviar_batch-100_kappa-true.png" width="300" />
 </p>
 
 ## 2. Comparison of Losses and error authors keras models and our pytorch model
