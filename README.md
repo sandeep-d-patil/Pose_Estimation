@@ -109,7 +109,7 @@ class vgg_model(nn.Module):
               x_kappa = torch.abs(self.kappa_predict(x_vgg))
               x = torch.cat((x_ypred, x_kappa), 1)
           if not predict_kappa:
-              x = self.ypred(x_vgg)
+              x = F.normalize(self.ypred(x_vgg), dim=1, p=2)
       return x
 ```
 
