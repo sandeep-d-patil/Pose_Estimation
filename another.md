@@ -57,7 +57,9 @@ Here we can see that the models are able to fit the data with comparable losses 
 | No shuffle | 31.85 +/- 1.22 | -0.92 +/- 0.034 |
 | Shuffle    | 25.97 +/- 1.18 | -0.92 +/- 0.077 |
 
-After running models in different scenarios we finalized on the  epoch size of 300,batch size of 100 for first 100 epochs and 50 for consecutive epochs, and learning rate of 1e-3 in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
+After running models in different scenarios we finalized on the  epoch size of 300,batch size of 100 for first 200 epochs and 50 for consecutive epochs, and learning rate of 1e-3 in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
+
+The single density models with which we ran the pytorch networks with the fixed kappa value produced the results as shown in the table above. The results produced are not similar compared to the results in the table. This is due to the lack of tuning parameters.
 
 # Conclusion
 The single density model for pose estimation is successfully reproduced from keras high-level API to pytorch. The errors for CAVIAR-o dataset from our model vary less than 6 percent and errors for towncentre dataset from our model vary less than 7 percent of the value of errors when compared to the original authors model. 
