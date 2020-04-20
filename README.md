@@ -123,7 +123,7 @@ PASCAL 3D+ contains the 10 different classes of images with the size of 224x224x
 
 <p 
 align="center">
-  <src="images/pascaldata.png" width="100" height="100" />
+  <img src="images/pascaldata.png" width="100" height="100" />
 </p>
 
 CAVIAR-o dataset contains images of partially occluded heads , the images have been upscaled to 50x50x3 images from their original size of 7x7x3 images. the truth values contain the gaze angle in degrees. Due to availability of the more images , the number of validation set and testing set are increased. This dataset pose a challenge for the network due to two things mainly, upscale and blur in the image. The CAVIAR-o data can downloaded from [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The caviar data is visualized as below.
