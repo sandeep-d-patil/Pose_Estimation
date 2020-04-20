@@ -12,7 +12,7 @@ As head pose is about angular orientation it is generally hard to find a suffici
 The concentration parameter kappa is a measure of concertration of the data around the mean, or predicted, value of the distribution. The influence of kappa on a distribution is illustrated below (image taken from original report). As can be observed, higher kappa value concentrates the data towards the centre of the distribution making a prediction more certain.
 
 <p align="center">
-<img src = "/images/kappa.JPG" />
+<img src = "/images/kappa.JPG" height = "200"/>
   </p>
 
 
