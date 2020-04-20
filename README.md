@@ -280,7 +280,7 @@ data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader}
 ### Recoding supportive functions from Tensorflow to Pytorch
 The single density model requires several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These original functions were not usable within our Pytorch environment, as they were written in either tensorflow, Keras and/or numpy. The functions included loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
 
-
+```markdown
 # Loss functions
 def cosine_loss_py(y_target, y_pred):
     loss = 1 - torch.sum(torch.mul(y_target, y_pred), dim=1)
