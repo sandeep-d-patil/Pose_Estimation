@@ -137,14 +137,14 @@ CAVIAR-o dataset contains images of partially occluded heads , the images have b
 
 <p 
 align="center">
-  <img src="images/caviardata.png" width="100" height="100" />
+  <img src="images/caviardata.png" height="100" />
 </p>
 
 Towncentre dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels. The towncentre data can be downloaded [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The towncentre data is visualized as below.
 
 <p 
 align="center">
-  <img src="images/towncentredata.png" width="400" height="100" />
+  <img src="images/towncentredata.png"  height="100" />
 </p>
 
 The towncentre dataset and caviar datasets required some preprocessing as the downloaded file format (i.e .bz2 format) and input format (.pkl.gz format) needed to run the model are different, for this we referred to the [Lucas Beyers](https://github.com/lucasb-eyer/BiternionNet/tree/e0cf7d29bfa177e4d8eded463e2c8304b78e2984) repository in order to find the source and methods required to download and preprocess the data. After preprocessing the data is then converted to pytorch tensors using `torch.tensor(..)` and `.permute(..)` methods so as to input them into the dataloader readable format. The data downloaded for each dataset respectively should be placed in the root folder before running the dataloading process.
@@ -492,7 +492,11 @@ Apart from reproducing the results from the table, two different aspects of loss
 ## 1.Effects of losses with variation in batch sizes during training
 The loss of distribution in training data and validating data give information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a few important parameters like: data batch sizes for training and validation or division. Hence we deemed it important to evaluate these parameters in order to produce good results for the data. 
 
-![overandunderfit](https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU) 
+<p
+align = "center"
+< img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU" />
+</p>
+
 
 
 From the above image we can see that having a lower batch size the loss fluctuations over each epoch is high and as and when the batch size is increased the loss fluctuation is decreased. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf) We can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
