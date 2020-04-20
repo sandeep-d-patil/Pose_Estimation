@@ -12,7 +12,9 @@ As head pose is about angular orientation it is generally hard to find a suffici
 The concentration parameter kappa is a measure of concertration of the data around the mean, or predicted, value of the distribution. The influence of kappa on a distribution is illustrated below (image taken from original report). As can be observed, higher kappa value concentrates the data towards the centre of the distribution making a prediction more certain.
 
 ![kappa](/images/kappa.JPG)
-
+<p align="centre">
+  Figure: variation in distribution with respect to kappa values
+  </p>
 
 
 ### Original code
@@ -32,6 +34,10 @@ A visualisation of the information flow as extracted from the Keras code is illu
 <p align="center">
   <img src = "images/Network_architecture_v2.png" height = "500" />
   </p>
+<p 
+align="center">
+Figure: Network architecture
+</p>
 
 ## Implementation in Pytorch
 With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion. 
@@ -134,6 +140,10 @@ PASCAL 3D+ contains the 10 different classes of images with the size of 224x224x
 align="center">
   <img src="images/pascaldata.png" width="100" height="100" />
 </p>
+<p 
+align="center">
+Figure: Pascal3D+ images visualized 
+</p>
 
 CAVIAR-o dataset contains images of partially occluded heads , the images have been upscaled to 50x50x3 images from their original size of 7x7x3 images. the truth values contain the gaze angle in degrees. Due to availability of the more images , the number of validation set and testing set are increased. This dataset pose a challenge for the network due to two things mainly, upscale and blur in the image. The CAVIAR-o data can downloaded from [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The caviar data is visualized as below.
 
@@ -141,12 +151,20 @@ CAVIAR-o dataset contains images of partially occluded heads , the images have b
 align="center">
   <img src="images/caviardata.png" height="100" />
 </p>
+<p 
+align="center">
+Figure: Caviar images visualized
+</p>
 
 Towncentre dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels. The towncentre data can be downloaded [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The towncentre data is visualized as below.
 
 <p 
 align="center">
   <img src="images/towncentredata.png"  height="100" />
+</p>
+<p 
+align="center">
+Figure: Towncentre images visualized
 </p>
 
 The towncentre dataset and caviar datasets required some preprocessing as the downloaded file format (i.e .bz2 format) and input format (.pkl.gz format) needed to run the model are different, for this we referred to the [Lucas Beyers](https://github.com/lucasb-eyer/BiternionNet/tree/e0cf7d29bfa177e4d8eded463e2c8304b78e2984) repository in order to find the source and methods required to download and preprocess the data. After preprocessing the data is then converted to pytorch tensors using `torch.tensor(..)` and `.permute(..)` methods so as to input them into the dataloader readable format. The data downloaded for each dataset respectively should be placed in the root folder before running the dataloading process.
@@ -325,9 +343,13 @@ def maad_from_deg_py(y_pred, y_target):
 
 ```
 ### Loss Function
-The loss function used here is `von_mises_log_likelihood` which calculates the loss function as shown in the equation below
+The loss function used here is `von_mises_neg_log_likelihood` which calculates the loss function as shown in the equation below
 
 ![loss](/images/logloss.JPG)
+<p 
+align="center">
+Equation: von_mises_neg_log_likelihood
+</p>
 
 ### Training and validation
 The training and validation algorithm used in the Pytorch implemenation is illustrated below. This is different to the Keras implementation, where a single line of code suffices to start training a model. As previously explained, we iterate over the created dataloader to provide the training algorithm with the batches of images. All computations happen via the GPU. After each training epoch the model is validated using the validation test set. Additionally, the averaged training loss and validation loss per batch are printed and stored after every epoch. Finally, the loss curves are plotted against the number of epochs to evaluate the model for fitting behaviour.
@@ -514,7 +536,10 @@ float="left">
 <img src="images/caviar_batch-50_kappa-true.png" width="300" /> 
 <img src="images/caviar_batch-100_kappa-true.png" width="300" />
   </p>
-
+<p 
+align="center">
+Figure: 
+</p>
 ## 2. Comparison of Losses and error authors keras models and our pytorch model
 To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
 
