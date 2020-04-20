@@ -3,7 +3,7 @@ The link for the paper which is reproduced is [here](https://eccv2018.org/openac
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
-The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first variant will be elaborated. The data used for pose estimation are the PASCAL3D+, TownCentre and CAVIAR-o datasets. The CAVIAR-o and TownCentre datasets present a challenging task of coarse gaze estimation as the images are of low resolution, as they are obtained from surveillance camera videos. In the CAVIAR dataset, the images with occulded head instances are only considered for the dataset. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
+The proposed method for uncertainty quantification consists of using a VGG-style convolutional network combined with a probabilistic von Mises distribution to predict the distribution over the object pose angle. The paper discusses three different types of von Mises distributions. First, where a single value determines the shape of the distribution. Second, where a finite number of mixture components determines the shape and third, where an infinite number of mixture components defines the shape. For this blog only the first variant will be elaborated. The data used for pose estimation are the PASCAL3D+, TownCentre and CAVIAR-o datasets. The CAVIAR-o and TownCentre datasets present a challenging task of coarse gaze estimation as the images are of low resolution, as they are obtained from surveillance camera videos. In the CAVIAR dataset, the images with occluded head instances are only considered for the dataset. Hence this paper aims to produce a Deep neural network focussed on head pose detection in crowded places from the surveillance cameras. 
 
 ### Biternion representation
 As head pose is about angular orientation it is generally hard to find a sufficient loss function for training. This is because angular orientation has a periodic nature and is therefore discontinuous. Predicted values close to the ground truth can be reset to the next period and be penalized very badly in conventional loss function. This paper solves that problem by using Biternion networks, which is a different parameterization of angles removing this periodic aspect. 
@@ -17,7 +17,7 @@ The concentration parameter kappa is a measure of concertration of the data arou
 The paper is provided with code, which is written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
 ## Understanding the original code in Keras
-As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation provided in the paper for us to understand what is exactly happening.
+<!-- As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, --> Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation provided in the paper for us to understand what is exactly happening.
 
 ### Information propagation
 We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API and Tensorflow syntax that is used. A good place to start was to pinpoint the propagation of information through the model. This propagation is dependent on which model type is run, of which there are two. 
@@ -118,22 +118,25 @@ plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
-[PASCAL 3D+](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view) contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. The dataset is visualized as below.
+PASCAL 3D+ contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. The PASCAL 3D+ data can be downloaded [here](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view). The dataset is visualized as below.
 
 
-<p align="center">
+<p 
+align="center">
   <img width="100" height="100" src=images/pascaldata.png>
 </p>
 
-[CAVIAR-o](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/) dataset contains images of partially occluded heads , the images have been upscaled to 50x50x3 images from their original size of 7x7x3 images. the truth values contain the gaze angle in degrees. Due to availability of the more images , the number of validation set and testing set are increased. This dataset pose a challenge for the network due to two things mainly, upscale and blur in the image. The caviar data is visualized as below.
+CAVIAR-o dataset contains images of partially occluded heads , the images have been upscaled to 50x50x3 images from their original size of 7x7x3 images. the truth values contain the gaze angle in degrees. Due to availability of the more images , the number of validation set and testing set are increased. This dataset pose a challenge for the network due to two things mainly, upscale and blur in the image. The CAVIAR-o data can downloaded from [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The caviar data is visualized as below.
 
-<p align="center">
+<p 
+align="center">
   <img width="100" height="100" src=images/caviardata.png>
 </p>
 
-[Towncentre](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/) dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels. The towncentre data is visualized as below.
+Towncentre dataset contains images from the videoclip recorded from a surveillance camera. The images are of size 50x50x3. The truth values contain the gaze angle in degrees.  This dataset contains heads of tracked pedestrians in a shopping district, annotated with head pose regression labels. The towncentre data can be downloaded [here](https://omnomnom.vision.rwth-aachen.de/data/BiternionNets/). The towncentre data is visualized as below.
 
-<p align="center">
+<p 
+align="center">
   <img width="400" height="100" src=images/towncentredata.png>
 </p>
 
