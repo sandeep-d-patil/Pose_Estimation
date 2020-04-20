@@ -543,10 +543,10 @@ run_model.evaluation(data_loaders)
 ## Results
 The results that are obtained with our single density Pytorch implementation are discussed and compared with the original Tensorflow model of the author. The CAVIAR-o and TownCentre datasets, that were mentioned earlier, are compared and the Table 2 of the [Sergey Prokudin et al](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf) paper is discussed. 
 
-Apart from the attempt to reproduce the results from the table, the following aspects are compared.
-1. Influence of shuffling the data during training
-2. Effects of losses with varying training batch size
-3. Comparison of Losses and error models and our pytorch model
+The following aspects will be evaluated.
+1. Influence of shuffling the data during training.
+2. Effects of losses with varying training batch size.
+3. Reproduction of table 2 of the original paper using the single density Pytorch implementation. 
 
 The model is evaluated on the different datasets using two metrics, namely MAAD error and log likelihood. The MAAD error refers to the mean absolute angular deviation which is a widely used metric for angular regression tasks. The log likelihood error is a widely accepted scoring rule for assessing the quality of probabilistic predictions. MAAD error should be as small as possible, whereas the log likelihood should be as high as possible.
 
@@ -603,14 +603,12 @@ Figure:
 |                            |             |                |                |                |                |                 |                |
 
 
-## 3. Comparison between our Pytorch implementation and the original Tensorflow code
-To compare the error values in the Table 2 we have to achieve a comparable model in pytorch as the model in Tensorflow. Hence we carried out various training and validations to compare the models. 
+## 3. Reproduction of Table 2 from authors paper
+After running the Pytorch model in different configurations we finalized on the following settings for the datasets:
+* CAVIAR-o: `epochs = 300`; batch size of 100 for first 200 epochs and 50 for consecutive epochs and `Shuffle=True`. The settings for learning rate and the optimizer are the same as indicated in the previous section.
+* TownCentre: `epochs = 50`, `batch size = 25`. The settings for learning rate and the optimizer are the same as indicated in the previous section.
 
-
-Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood errors. 
-
-## Reproduction of Table 2 from authors paper
-After running models in different scenarios we finalized on the  epoch size of 300,batch size of 100 for first 200 epochs and 50 for consecutive epochs, and learning rate of 1e-3 in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
+We have achieved comparable results with our Pytorch model as shown below in the table. We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model. With a bit more tweaking of the parameters the results are most likely achievable for all datasets and metrics. Therefore, we consider the results of the single density model from the paper as reproducable.
 
 
 | Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
@@ -623,6 +621,5 @@ Criteria: | MAAD | log-likelihood | MAAD | log-likelihood |
 |Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15** | **0.717 +/- 0.070**|  **24.4deg +/- 1.08** | **-0.78 +/- 0.06**|
 
 # Conclusion
-The single density model for pose estimation is successfully reproduced from keras high-level API to pytorch. The errors for CAVIAR-o dataset from our model vary less than 6 percent and errors for towncentre dataset from our model vary less than 7 percent of the value of errors when compared to the original authors model. 
-Hence single density model results of Table2 have been implemented.
+The single density model for pose estimation is successfully reproduced from keras high-level API to pytorch. The errors for CAVIAR-o dataset from our model vary less than 6 percent and errors for towncentre dataset from our model vary less than 7 percent of the value of errors when compared to the original authors model. Hence single density model results of Table2 have been implemented.
 
