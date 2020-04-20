@@ -37,3 +37,18 @@ To compare the error values in the Table 2. we have to achieve a comparable mode
 ## insert the keras and pytorch model results for different datasets
 
 Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood losses.
+
+
+
+
+
+
+|                            | Batch size: |       25       | 50             | 100            | 25             | 50              | 100            |
+|----------------------------|-------------|:--------------:|----------------|----------------|----------------|-----------------|----------------|
+|                            | Epochs      | MAAD error     | MAAD error     | MAAD error     | Log-likelihood | Log-likelihood  | Log-likelihood |
+| CAVIAR-o - predict kappa   | 200         | 5.76 +/- 0.17  | 6.03 +/- 0.16  | 5.51 +/- 0.16  | 0.51 +/- 0.09  | 0.56 +/- 0.06   | 0.57 +/- 0.09  |
+| TownCentre - predict kappa | 50          | 24.44 +/- 1.08 | 24.85 +/- 1.15 | 25.97 +/- 1.18 | -0.78 +/- 0.06 | -0.78 +/- 0.067 | -0.92 +/- 0.08 |
+|                            |             |                |                |                |                |                 |                |
+
+
+
