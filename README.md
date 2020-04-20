@@ -41,16 +41,6 @@ We started out by learning how a neural network is built and trained within Tens
 
 With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion.
 
-# Setting up the Google Colab environment
-The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
-
-```markdown
-import os
-from google.colab import drive
-drive.mount("/content/drive")
-os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
-```
-
 ## Network Architecture
 The architecture of the network is similar between the single density and finite mixture models. The network can be considered very deep and sequential with 24 layers. There are 5 convolution layers used which have 3x3 kernel sizes throughout. The volume reduction is taken care by the max pooling layer of size 2x2 which is used twice in the network. The Batch normalizations are used to normalize the values of the running averages which are 6 in number . ReLU (Rectified Linear Unit  is used as the activation functions. The Layers are flattened in the end using Linear layer and then Dropout is carried out in order to obtain more accurate weights of the network. The Network when used for training a 224x224x3 image, it has 78,781,822 trainable parameters. The total parameter size is about 300 MB. The network can be visualized as shown below.
 
@@ -108,6 +98,16 @@ class vgg_model(nn.Module):
           if not predict_kappa:
               x = F.normalize(self.ypred(x_vgg), dim=1, p=2)
       return x
+```
+
+# Setting up the Google Colab environment
+The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
+
+```markdown
+import os
+from google.colab import drive
+drive.mount("/content/drive")
+os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
 ```
 
 # Datasets
