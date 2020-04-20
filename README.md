@@ -520,15 +520,30 @@ Apart from the attempt to reproduce the results from the table, the following as
 2. Comparison of Losses and error  models and our pytorch model.
 3. Effects of losses with variation in batch sizes during training.
 
+The model is evaluated on the different datasets using two metrics, namely MAAD error and log likelihood. The MAAD error refers to the mean absolute angular deviation which is a widely used metric for angular regression tasks. The log likelihood error is a widely accepted scoring rule for assessing the quality of probabilistic predictions. MAAD error should be as small as possible, whereas the log likelihood should be as high as possible.
+
 ## 1. Influence of shuffling
-The training data can either be fed in a constant sequence to the network each epoch, or be picked randomly. The latter is called shuffling and its effect is evaluated on the TownCentre dataset. Generally speaking, shuffling the data has a generalizing effect, leading to improved results. The table below shows the values for the evaluation metrics MAAD error and log likelihood for a shuffled and unshuffled training set. It can be observed the MAAD error is worse for unshuffled training, whereas the log-likelihood is very similar. Looking at the learning curves, displayed below the table, the shuffled and unshuffled variant have a very similar training loss curve. However, the validation loss curve is constantly lower and less constant. 
+The training data can either be fed in a constant sequence to the network each epoch, or be picked randomly. The latter is called shuffling and its effect is evaluated on the TownCentre dataset. Generally speaking, shuffling the data has a generalizing effect, leading to improved results. The table below shows the values for the evaluation metrics MAAD error and log likelihood for a shuffled and unshuffled training set. It can be observed the MAAD error is worse for unshuffled training, whereas the log-likelihood is very similar. 
 
 |            | MAAD error     |  Log-likelihood |
 |------------|----------------|:---------------:|
 | No shuffle | 31.85 +/- 1.22 | -0.92 +/- 0.034 |
 | Shuffle    | 25.97 +/- 1.18 | -0.92 +/- 0.077 |
 
-## 1. Influence of varying batch size
+Looking at the learning curves below the shuffled and unshuffled variant have a very similar training loss curve. However, the validation loss curve is constantly lower and less constant. 
+
+<p 
+float="left">
+<img src="images/towncentre_shuffle.png" width="370" />
+<img src="images/towncentre_noshuffle.png" width="370" />
+  </p>
+<p 
+align="center">
+Figure: loss curves for shuffled set (left) and loss curves for unshuffled set (right)
+</p>
+
+
+## 2. Influence of varying batch size
 The loss curves in training data and validating data provides information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a some important training parameters, such as batch size. Therefore, we have experimented with different batch sizes for all datasets in order to produce good results.
 
 <p 
@@ -541,7 +556,7 @@ Figure: loss variation with different batch sizes
 </p>
 To influence of batch size is illustrated in the image above, showing that a smaller batch size inreases the loss fluctuations over each epoch, whereas with larger batch sizes the loss fluctuations decrease. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf). 
 
-The table below shows a comparison for different batch sizes for the TownCentre and CAVIAR-o dataset when predicting the biternion angles and kappa. The following settings are adopted for the model in the entire evaluation phase, as they were already filled in for the original Tensorflow model;  `learning rate = 1e-3`, `epsilon = 1.0e-7`, `beta1 = 0.9`, `beta2 = 0.999`, `conv_dropout = 0.2`, `fc_dropout = 0.5` and `vgg_fc_layer_size = 512`. 
+The table below shows a comparison for different batch sizes for the TownCentre and CAVIAR-o dataset when predicting the biternion angles and kappa. The following settings are adopted for the model in the entire evaluation phase, as they were already filled in for the original Tensorflow model;  `learning rate = 1e-3`, `epsilon = 1.0e-7`, `beta1 = 0.9`, `beta2 = 0.999`, `conv_dropout = 0.2`, `fc_dropout = 0.5` and `vgg_fc_layer_size = 512`. The following observations are made. First, the TownCentre set scores better on the evaluation metrics MAAD error and log-likelihood when decreasing batch size. Second, for the CAVIAR-o set the batch size influence is hard to tell as different batch sizes score best on different metrics.
 
 <p 
 float="left">
@@ -560,19 +575,15 @@ Figure:
 |                            |             |                |                |                |                |                 |                |
 
 
-## 2. Comparison between our Pytorch implementation and the original Tensorflow code
-To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
+## 3. Comparison between our Pytorch implementation and the original Tensorflow code
+To compare the error values in the Table 2 we have to achieve a comparable model in pytorch as the model in Tensorflow. Hence we carried out various training and validations to compare the models. 
 
-## insert the keras and pytorch model results for different datasets
 
-Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood errors. The MAAD error refers to the mean absolute angular deviation which is a widely used metric for angular regression tasks. The log likelihood error is a widely accepted scoring rule for assessing the quality of probabilistic predictions. 
+Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood errors. 
 
 ## Reproduction of Table 2 from authors paper
 After running models in different scenarios we finalized on the batch size of ... , epoch size of ... and learning rate of ... in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
 We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
-
-
-
 
 
 | Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
@@ -580,7 +591,7 @@ We can observe that the errors for CAVIAR-o dataset is less than 6 percent and e
 Criteria: | MAAD | log-likelihood | MAAD | log-likelihood |
 ------------ | -------------|-----------|---------| -------|
 | Beyer et al., fixed k| 5.74deg +/- 0.13 | 0.262 +/- 0.031| 22.8deg +/- 1.0 |-0.89 +/- 0.06|
-| Ours, fixed k |7.5 +/- 0.15 | 0.11 +/- 0.03| 25.06 +/- 0.99 | -0.93 +/- 0.036 | 
+| Ours, fixed k |7.5deg +/- 0.15 | 0.11deg +/- 0.03| 24.14deg +/- 1.04 | -0.91deg +/- 0.036 | 
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
 |Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15** | **0.717 +/- 0.070**|  **24.4deg +/- 1.08** | **-0.78 +/- 0.06**|
 
