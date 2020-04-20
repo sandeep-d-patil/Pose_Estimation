@@ -116,6 +116,7 @@ image, label = sample
 grid = torchvision.utils.make_grid(image[1], nrow=1 )
 plt.figure(figsize=(15,15))
 plt.imshow(np.transpose(grid, (1,2,0)))
+```
 
 [PASCAL 3D+](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view) contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. The dataset is visualized as below.
 
