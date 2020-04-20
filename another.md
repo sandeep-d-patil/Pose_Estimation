@@ -52,3 +52,9 @@ Here we can see that the models are able to fit the data with comparable losses 
 
 
 
+|            | MAAD error     |  Log-likelihood |
+|------------|----------------|:---------------:|
+| No shuffle | 31.85 +/- 1.22 | -0.92 +/- 0.034 |
+| Shuffle    | 25.97 +/- 1.18 | -0.92 +/- 0.077 |
+
+
