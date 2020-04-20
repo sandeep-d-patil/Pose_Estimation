@@ -502,10 +502,9 @@ The loss of distribution in training data and validating data give information a
 align="center">
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU" height = "100" />
 </p>
-
 <p 
 align="center">
-this is the caption
+Figure: loss variation with different batch sizes
 </p>
 From the above image we can see that having a lower batch size the loss fluctuations over each epoch is high and as and when the batch size is increased the loss fluctuation is decreased. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf) We can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
 
