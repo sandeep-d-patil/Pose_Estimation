@@ -1,6 +1,5 @@
-## Pose Estimation using VGG-style network and InceptionResNet
+# Pose Estimation using VGG-style network and InceptionResNet
 The link for the paper which is reproduced is [here](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf).
-## TO THE READER ON MONDAY -- BLOG STILL UNDER CONSTRUCTION. THIS IS NOT THE FINAL VERSION --- TO THE READER ON MONDAY
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
 
@@ -9,51 +8,37 @@ The proposed method for uncertainty quantification consists of using a VGG-style
 * EXPLAIN HOW THE PAPER PREDICTS THIS --> EXPLAIN BITERNION ANGLES TO SOLVE CONTINUOUS PROBLEM + KAPPA!
 * ADD MORE INTUITIVE EXPLANATION OF MEANING KAPPA!
 
+### Notes
+
 The paper is provided with code, which is written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
 
-# Understanding the original code
-As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation in the paper to understand what was happening. 
+## Understanding the original code in Keras
+As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation provided in the paper for us to understand what is exactly happening.
 
-We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API and Tensorflow syntax that is used. A good place to start was to pinpoint the propagation of information through the model. This propagation is dependent on which model type is run, of which there are two. Each model uses the von Mises log likelihood function
+We started out by learning how a neural network is built and trained within Tensorflow. This meant getting to grips with the functional Keras API and Tensorflow syntax that is used. A good place to start was to pinpoint the propagation of information through the model. This propagation is dependent on which model type is run, of which there are two. 
 
 1. Use the network to predict the biternion angles, as well as the kappa value. 
 1. Use the network to solely predict the biternion angles, followed by calculating kappa by maximizing the von Mises log likelihood. 
 
-* Initialization
-    * The model is initialized using `BiternionVGG(loss_type='vm_likelihood', predict_kappa=True)`.
-    * Run `_pick_loss` method thereby setting loss equal to `von Mises log likelihood`, which is the negative von Mises Log Likelihood with corresponding inputs: ground truth in biternion angles, predicted biternion angles and predicted kappa value.
-    * Define symbolic input X shape using `Input()`.
-    * Feed symbolic input through the VGG backbone using `vgg_model(...)(input)`. Output is named vgg_x.
-    * Feed symbolic output, `vgg_x`, through a fully connected layer with 2 outputs (biternion angle prediction) and normalize output using L2 normalization. 
-    * Feed symbolic output, `vgg_x`, additionally through a fully connected layer with 1 output (kappa prediction) and make the output absolute. 
-    * In case of predicting kappa using the network:
-      * Since predict_kappa = True, the feedforward is defined using `Model(input_X, concatenate[y_pred, kappa_pred])`. This maps the symbolic input X through the above defined network to the final output. Note that this time the network splits up after the VGG backbone into two different dense layers followed by two different lambda layers. The outputs are then combined again forming 1 output. The feedforward is defined as names `model`.
-    * In case of finding kappa by maximizing the von Mises log likelihood:
-      * Define the optimizer that will be used by running `keras.optimizers.Adam()`.
-    * Compile the symbolic network using `model.compile()`. Note that model is our defined network. Further inputs are the loss function and optimizer. 
-* Training & validation:
-    * The training is called using the `fit` method corresponding the the `model` defined above; 
-    * The model is automatically trained depending on the provided training parameters, e.g. number of epochs. 
-      * After each batch the average loss of that specific batch is printed. 
-      * After each epoch the entire validation set is run throug the model and the average loss is printed
-      * Training is done after all epochs are run.    
-    * If not predicting kappa; fine-tuning Kappa using the validation set:
-      * The `finetune_kappa` method is called, since predict_kappa = False. 
-      * `model.predict` is called for all validation samples and returns predicted biternion angles
-      * a vector is created containing values for kappa between 0 and `max_kappa`. 
-      * the mean von Mises log likelihood is calculated for each kappa on all predicted values.
-      * The kappa value that has the largest log likelihood is set as the fixed kappa value. Note that this kappa value applies to all images and is therefore not considered ideal.
-* Evaluation
+A visualisation of the information flow as extracted from the Keras code is illustrated below.
 
-With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion.
-
-## Network Architecture
-The architecture used in the paper is a VGG-style network with five 3x3 convolutional layers. Six batch normalization layers are used and volume reduction is performed using two 2x2 max pooling layers. Rectified Linear Units are used as activation functions throughout the network and dropout is used twice for generalization purposes. The output of the model is made absolute when predicting kappa, or normalized using L2 normalization when predicting the gaze angle. The amount of trainable parameters for the PASCAL3D+ image input size (3x224x224) is 78,781,822. For the CAVIAR-o and TownCentre image input size (3x50x50) the amount of trainable paramters is 923,515. The visualisation of the network is illustrated below.
-
-The single mixture model is visualized as below. 
 ![SingleMixture](images/Network_architecture_v2.png)
 
-The implementation of the architecture in Pytorch is illustrated below.
+## Implementation in Pytorch
+With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion. 
+
+### Setting up the Google Colab environment
+The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
+
+```markdown
+import os
+from google.colab import drive
+drive.mount("/content/drive")
+os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
+```
+
+### Network Architecture
+As illustrated in the section above, the architecture used in the paper is a VGG-style network with five 3x3 convolutional layers. Six batch normalization layers are used and volume reduction is performed using two 2x2 max pooling layers. Rectified Linear Units are used as activation functions throughout the network and dropout is used twice for generalization purposes. The output of the model is made absolute when predicting kappa, or normalized using L2 normalization when predicting the gaze angle. The amount of trainable parameters for the PASCAL3D+ image input size (3x224x224) is 78,781,822. For the CAVIAR-o and TownCentre image input size (3x50x50) the amount of trainable paramters is 923,515. Our implementation of the architecture in Pytorch is illustrated below. Note that the number of inputs for the fully connected layer in the sequential part of the model depends on the input dataset. For the PASCAL3D+ this number is equal to 153,664, whereas for the TownCentre and CAVIAR-o set this number equals 1600.
 
 ```markdown
 class vgg_model(nn.Module):
@@ -106,17 +91,7 @@ class vgg_model(nn.Module):
       return x
 ```
 
-# Setting up the Google Colab environment
-The first step in the code building process is to setup the Google Colab environment. We do this by connecting Google Colab to Google Drive and setting the working directory to the right folde. All relevant documentation is uploaded to the `deep_direct_stat-master` folder which can be accessed directly from the Colab document. 
-
-```markdown
-import os
-from google.colab import drive
-drive.mount("/content/drive")
-os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
-```
-
-# Datasets
+### Datasets
 The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre datasets and they are divided into three parts namely training , validation and testing. the distribution are as shown as follows.
 
 Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre
@@ -144,7 +119,7 @@ Test set  | 275 |5445 | 904
   <img width="400" height="100" src=images/towncentredata.png>
 </p>
 
-## DataLoader
+### DataLoader
 All datasets used in the paper are not standard sets that are included within the Pytorch computer vision package, torchvision. Therefore, we have to write our own DataSet class that will be used later on to run the batches in the training process. With this DataSet class we can access all the training samples in the dataset. The first step is to load the datasets, which is done with a script provided by the author that splits the dataset in a training, validation and test set. Second, we inherit the functionality of the DataSet class in our dataloader, which is done by overwriting the `__len__` and `__getitem__` methods. The defined DataSet class now serves as input for the DataLoader class, which additionally accepts the parameter batch_size. The DataLoader is used to run through the data in the training process of our model.
 
 ```markdown
@@ -154,7 +129,7 @@ from datasets import pascal3d
 from datasets import caviar
 from datasets import towncentre
 
-# Loading and preparing the PASCAL3D+ dataset
+### Loading and preparing the PASCAL3D+ dataset
 cls = 'aeroplane' # if cls is None, all classes will be loaded
 pascaldb_path = 'data/pascal3d+_imagenet_train_test.h5'
 x_train_tf, y_train_tf, x_val_tf, y_val_tf, x_test_tf, y_test_tf = pascal3d.load_pascal_data(pascaldb_path, cls=cls)
