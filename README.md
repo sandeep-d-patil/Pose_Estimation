@@ -55,8 +55,7 @@ os.chdir('/content/drive/My Drive/Deep Learning/deep_direct_stat-master')
 The architecture of the network is similar between the single density and finite mixture models. The network can be considered very deep and sequential with 24 layers. There are 5 convolution layers used which have 3x3 kernel sizes throughout. The volume reduction is taken care by the max pooling layer of size 2x2 which is used twice in the network. The Batch normalizations are used to normalize the values of the running averages which are 6 in number . ReLU (Rectified Linear Unit  is used as the activation functions. The Layers are flattened in the end using Linear layer and then Dropout is carried out in order to obtain more accurate weights of the network. The Network when used for training a 224x224x3 image, it has 78,781,822 trainable parameters. The total parameter size is about 300 MB. The network can be visualized as shown below.
 
 The single mixture model can be visualized as below. There is only one simple von mises distribution used to obtain the pose of the object. Hence only one distribution can be seen as the output in the network.
-![singlemixture](images/singlemixture.JPG)
-![Finitemixture](images/Network_architecture.png)
+![Finitemixture](images/Network_architecture_v2.png)
 
 The input for the network is a RGB image of size 224x224 or 50x50 for respectively the PASCAL3D+ and Towncentre/CAVIAR-o datasets. The network has two outputs, containing the biternion azimuth/gaze angle, and additionally a third when kappa is predicted by the network. The VGG backbone of the network is provided below. Note the influence of `predict_kappa` in the forward function on the information propagation in the network.
 
