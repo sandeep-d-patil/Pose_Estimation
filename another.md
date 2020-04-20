@@ -22,7 +22,7 @@ Apart from reproducing the results from the table, two different aspects of loss
 2. Comparison of Losses and error authors keras models and our pytorch model.
 
 ## 1.Effects of losses with variation in batch sizes during training
-The loss of distribution in training data and validating data give information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a few important parameters like: data batch sizes, number of epochs for training and validation or division. Hence we deemed it important to evaluate these parameters in order to produce good results for the data. 
+The loss of distribution in training data and validating data give information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a few important parameters like: data batch sizes for training and validation or division. Hence we deemed it important to evaluate these parameters in order to produce good results for the data. 
 
 ![overandunderfit](https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU) 
 
