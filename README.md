@@ -120,7 +120,7 @@ class vgg_model_complete(nn.Module):
 ### Datasets
 The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre datasets and they are divided into three parts namely training , validation and testing. the distribution are as shown as follows.
 
-<center>
+
 
   |Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre|
   |------------ |:-------------:|:-----------:|:---------:|
@@ -128,7 +128,6 @@ The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre dataset
   |Validation set| 562 | 5444 | 874|
   |Test set  | 275 |5445 | 904|
 
-</center>
 
 #### Visualisation of the dataset
 In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness.
@@ -281,7 +280,7 @@ data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader}
 ### Recoding supportive functions from Tensorflow to Pytorch
 The single density model requires several functions that are not built into Pytorch, but were provided in the Tensorflow code by the original author of the paper. These original functions were not usable within our Pytorch environment, as they were written in either tensorflow, Keras and/or numpy. The functions included loss functions and angle conversions. Our implementation of these functions in Pytorch is provided below.
 
-``` markdown
+
 # Loss functions
 def cosine_loss_py(y_target, y_pred):
     loss = 1 - torch.sum(torch.mul(y_target, y_pred), dim=1)
@@ -611,8 +610,7 @@ To compare the error values in the Table 2 we have to achieve a comparable model
 Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood errors. 
 
 ## Reproduction of Table 2 from authors paper
-After running models in different scenarios we finalized on the batch size of ... , epoch size of ... and learning rate of ... in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
-We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
+After running models in different scenarios we finalized on the  epoch size of 300,batch size of 100 for first 200 epochs and 50 for consecutive epochs, and learning rate of 1e-3 in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
 
 
 | Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
@@ -624,5 +622,7 @@ Criteria: | MAAD | log-likelihood | MAAD | log-likelihood |
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
 |Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15** | **0.717 +/- 0.070**|  **24.4deg +/- 1.08** | **-0.78 +/- 0.06**|
 
-Hence the results in the paper are reproduced.
+# Conclusion
+The single density model for pose estimation is successfully reproduced from keras high-level API to pytorch. The errors for CAVIAR-o dataset from our model vary less than 6 percent and errors for towncentre dataset from our model vary less than 7 percent of the value of errors when compared to the original authors model. 
+Hence single density model results of Table2 have been implemented.
 
