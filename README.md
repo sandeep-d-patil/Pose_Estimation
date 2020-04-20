@@ -104,6 +104,19 @@ Train set | 2247 | 10802 | 6916
 Validation set| 562 |5444 | 874
 Test set  | 275 |5445 | 904
 
+#### Visualisation of the dataset
+In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness. 
+
+```markdown
+import matplotlib.pyplot as plt
+
+sample = next(iter(train_loader))
+image, label = sample
+
+grid = torchvision.utils.make_grid(image[1], nrow=1 )
+plt.figure(figsize=(15,15))
+plt.imshow(np.transpose(grid, (1,2,0)))
+
 [PASCAL 3D+](https://drive.google.com/file/d/1baI_QUNuGN9DJGgaOWubbservgQ6Oc4x/view) contains the 10 different classes of images with the size of 224x224x3. The truth values contain the three canonical angles. The airplane class data has been used to train, validate and test the model. Since for a deep learning network needs a large amount of dataset to learn the features, a large amount of images from the dataset have been used in the training. The validation set has been used in the model to influence the 'kappa' value. kappa value is a measure of concertration of the data around the mean value of the distribution. This plays a major role in increasing the probability of finding the accurate value of the object pose. The dataset is visualized as below.
 
 
@@ -222,18 +235,7 @@ elif load_dataset == 'towncentre':
 
 data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader} 
 ```
-### Visualisation of the dataset
-In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness. 
 
-```markdown
-import matplotlib.pyplot as plt
-
-sample = next(iter(train_loader))
-image, label = sample
-
-grid = torchvision.utils.make_grid(image[1], nrow=1 )
-plt.figure(figsize=(15,15))
-plt.imshow(np.transpose(grid, (1,2,0)))
 ```
 
 ### Recoding supportive functions from Tensorflow to Pytorch
