@@ -10,7 +10,10 @@ As head pose is about angular orientation it is generally hard to find a suffici
 
 ### Concentration parameter kappa
 The concentration parameter kappa is a measure of concertration of the data around the mean, or predicted, value of the distribution. The influence of kappa on a distribution is illustrated below (image taken from original report). As can be observed, higher kappa value concentrates the data towards the centre of the distribution making a prediction more certain.
-![kappa](/images/kappa.JPG)
+
+<p align="center">
+<img src = "/images/kappa.JPG" />
+  </p>
 
 
 ### Original code
@@ -98,11 +101,15 @@ class vgg_model(nn.Module):
 ### Datasets
 The datasets under consideration are PASCAL 3D+, CAVIAR-o and Towncentre datasets and they are divided into three parts namely training , validation and testing. the distribution are as shown as follows.
 
-Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre
------------- | -------------|-----------|---------|
-Train set | 2247 | 10802 | 6916
-Validation set| 562 |5444 | 874
-Test set  | 275 |5445 | 904
+<center>
+
+  |Dataset | PASCAL 3D+ | CAVIAR-o | Towncentre|
+  |------------ |:-------------:|:-----------:|:---------:|
+  |Train set | 2247 | 10802 | 6916|
+  |Validation set| 562 | 5444 | 874|
+  |Test set  | 275 |5445 | 904|
+
+</center>
 
 #### Visualisation of the dataset
 In order to get a better understanding of the datasets, individual images for any of the three datasets can be plotted using the script below. This can improve our intuition in working with the data, e.g. why the towncentre dataset is a more tough dataset to deal with compared to the CAVIAR-o due to the increased blurryness.
