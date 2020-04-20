@@ -1,4 +1,4 @@
-# Pose Estimation using VGG-style network and InceptionResNet
+# Probabilistic pose Estimation using VGG-style network
 The link for the paper which is reproduced is [here](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf). The link to the code Google Colab is [here](https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb)
 
 Authors: 
