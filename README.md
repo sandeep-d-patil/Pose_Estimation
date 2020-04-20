@@ -48,11 +48,12 @@ We started out by learning how a neural network is built and trained within Tens
 With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion.
 
 ## Network Architecture
-The architecture used in the paper is a VGG-style network with five 3x3 convolutional layers. Six batch normalization layers are used and volume reduction is performed using two 2x2 max pooling layers. Rectified Linear Units are used as activation functions throughout the network and dropout is used twice for generalization purposes. The output of the model is made absolute when predicting kappa, or normalized using L2 normalization when predicting the gaze angle. The amount of trainable parameters for the PASCAL3D+ image input size (3x224x224) is 78,781,822. For the CAVIAR-o and TownCentre image input size (3x50x50) the amount of trainable paramters is 923,515. The visualisation of the network is illustrated below, as well as the Pytorch code.
+The architecture used in the paper is a VGG-style network with five 3x3 convolutional layers. Six batch normalization layers are used and volume reduction is performed using two 2x2 max pooling layers. Rectified Linear Units are used as activation functions throughout the network and dropout is used twice for generalization purposes. The output of the model is made absolute when predicting kappa, or normalized using L2 normalization when predicting the gaze angle. The amount of trainable parameters for the PASCAL3D+ image input size (3x224x224) is 78,781,822. For the CAVIAR-o and TownCentre image input size (3x50x50) the amount of trainable paramters is 923,515. The visualisation of the network is illustrated below.
 
 The single mixture model is visualized as below. 
 ![SingleMixture](images/Network_architecture_v2.png)
 
+The implementation of the architecture in Pytorch is illustrated below.
 
 ```markdown
 class vgg_model(nn.Module):
