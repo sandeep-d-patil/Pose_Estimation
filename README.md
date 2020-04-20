@@ -139,7 +139,7 @@ PASCAL 3D+ contains the 10 different classes of images with the size of 224x224x
 
 <p 
 align="center">
-  <img src="images/pascaldata.png" width="100" height="100" />
+  <img src="images/pascaldata.png" width="200" height="200" />
 </p>
 <p 
 align="center">
@@ -150,7 +150,7 @@ CAVIAR-o dataset contains images of partially occluded heads , the images have b
 
 <p 
 align="center">
-  <img src="images/caviardata.png" height="100" />
+  <img src="images/caviardata.png" height="200" />
 </p>
 <p 
 align="center">
@@ -161,7 +161,7 @@ Towncentre dataset contains images from the videoclip recorded from a surveillan
 
 <p 
 align="center">
-  <img src="images/towncentredata.png"  height="100" />
+  <img src="images/towncentredata.png"  height="200" />
 </p>
 <p 
 align="center">
@@ -513,13 +513,14 @@ def evaluation(data_loaders, model, return_per_image=False, predict_kappa=True):
 ```
 
 ## Results
-The results of pytorch model and authors keras model with single density function model are discussed here. All the three datasets mentioned earlier are compared and the Table 2 of the [Sergey Prokudin et al](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf) paper are discussed. 
-Apart from reproducing the results from the table, two different aspects of losses and errors are compaired here:
-1. Effects of losses with variation in batch sizes during training.
-2. Comparison of Losses and error authors keras models and our pytorch model.
+The results that are obtained with our single density Pytorch implementation are discussed and compared with the original Tensorflow model of the author. The CAVIAR-o and TownCentre datasets, that were mentioned earlier, are compared and the Table 2 of the [Sergey Prokudin et al](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf) paper is discussed. 
 
-## 1.Effects of losses with variation in batch sizes during training
-The loss of distribution in training data and validating data give information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a few important parameters like: data batch sizes for training and validation or division. Hence we deemed it important to evaluate these parameters in order to produce good results for the data. 
+Apart from the attempt to reproduce the results from the table, the following aspects of losses and evaluation metrics are compared.
+1. Effects of losses with variation in batch sizes during training.
+2. Comparison of Losses and error  models and our pytorch model.
+
+## 1. Influence of varying batch size
+The loss curves in training data and validating data provides information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a some important training parameters, such as batch size. Therefore, we have experimented with different batch sizes for all datasets in order to produce good results.
 
 <p 
 align="center">
@@ -529,7 +530,7 @@ align="center">
 align="center">
 Figure: loss variation with different batch sizes
 </p>
-From the above image we can see that having a lower batch size the loss fluctuations over each epoch is high and as and when the batch size is increased the loss fluctuation is decreased. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf) We can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
+To illustrate the importance of batch size the above image shows that having a smaller batch size inreases the loss fluctuations over each epoch, whereas with larger batch sizes the loss fluctuations decrease. This is based on the research conducted by [Sam McCandlish et al](https://arxiv.org/pdf/1812.06162.pdf).  can observe that in the caviar dataset trained over batch size of 100 and 50 batches respectively
 
 <p 
 float="left">
@@ -541,7 +542,7 @@ float="left">
 align="center">
 Figure: 
 </p>
-## 2. Comparison of Losses and error authors keras models and our pytorch model
+## 2. Comparison between our Pytorch implementation and the original Tensorflow code
 To compare the error values in the Table 2. we have to achieve a comparable model in pytorch as the model in keras. Hence we carried out various training and validations to compare the models. The plots of test and validation losses for similar setup in both keras model and pytorch model are shown below.
 
 ## insert the keras and pytorch model results for different datasets
