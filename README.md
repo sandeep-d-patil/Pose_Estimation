@@ -511,9 +511,9 @@ From the above image we can see that having a lower batch size the loss fluctuat
 
 <p 
 float="left">
-<img src="/images/caviar_batch-25_kappa-true.png" width="300" />
-<img src="/images/caviar_batch-50_kappa-true.png" width="300" /> 
-<img src="/images/caviar_batch-100_kappa-true.png" width="300" />
+<img src="images/caviar_batch-25_kappa-true.png" width="300" />
+<img src="images/caviar_batch-50_kappa-true.png" width="300" /> 
+<img src="images/caviar_batch-100_kappa-true.png" width="300" />
   </p>
 
 ## 2. Comparison of Losses and error authors keras models and our pytorch model
