@@ -29,7 +29,10 @@ We started out by learning how a neural network is built and trained within Tens
 1. Use the network to solely predict the biternion angles, followed by calculating kappa by maximizing the von Mises log likelihood. 
 
 A visualisation of the information flow as extracted from the Keras code is illustrated below.
-![SingleMixture](images/Network_architecture_v2.png)
+
+<p align="center">
+  <img src = "images/Network_architecture_v2.png" height = "100" />
+  </p>
 
 ## Implementation in Pytorch
 With a good understanding of the Tensorflow code the logic can be applied to our Pytorch implementation. This implementation will be elaborated below in stepwise fashion. 
@@ -492,9 +495,9 @@ Apart from reproducing the results from the table, two different aspects of loss
 ## 1.Effects of losses with variation in batch sizes during training
 The loss of distribution in training data and validating data give information about overfitting and underfitting of the model. The paper under consideration of reproduction does not state any facts or arguments about a few important parameters like: data batch sizes for training and validation or division. Hence we deemed it important to evaluate these parameters in order to produce good results for the data. 
 
-<p
-align = "center"
-< img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU" />
+<p 
+align="center">
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQmjSeu1pjHZpj6WqRkL3cywXaiFkFNjL4YHu6GLGqm4GXEDoO&usqp=CAU" height = "100" />
 </p>
 
 
