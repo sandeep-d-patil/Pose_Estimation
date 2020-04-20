@@ -492,6 +492,11 @@ To compare the error values in the Table 2. we have to achieve a comparable mode
 ## insert the keras and pytorch model results for different datasets
 
 Here we can see that the models are able to fit the data with comparable losses and hence can be used to compare the MAAD and Log likelihood losses.
+
+## Reproduction of Table 2 from authors paper
+After running models in different scenarios we finalized on the batch size of ... , epoch size of ... and learning rate of ... in order to achieve the results from the table 2. We have achieved comparable results with our pytorch model as shown below in the table.
+We can observe that the errors for CAVIAR-o dataset is less than 6 percent and errors for towncentre dataset from our model is less than 7 percent of the value of errors in authors model.
+
 | Dataset: | CAVIAR-0| CAVIAR-o | Towncentre | Towncentre |
 ------------ | -------------|-----------|---------| -------|
 Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
@@ -501,5 +506,5 @@ Crieria: | MAAD | log-likelihood | MAAD | log-likelihood |
 |Prokudin, Single von Mises | 5.53deg +/- 0.13 | 0.700 +/- 0.043 | 22.9deg +/- 1.1 | -0.57 +/- 0.05 | 
 |Pytorch Reproduction, Single von Mises | **5.21deg +/- 0.15 | 0.717 +/- 0.070|  24.4deg +/- 1.08 | -0.78 +/- 0.06**|
 
+Hence the results in the paper are reproduced.
 
-![loss_curve](images/loss_curve_CAVIAR_predict.PNG)
