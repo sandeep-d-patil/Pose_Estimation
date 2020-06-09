@@ -1,9 +1,9 @@
 # Probabilistic pose Estimation using VGG-style network
-The link for the paper which is reproduced is [here](https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf). The link to the code Google Colab is [here](https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb)
+The link for the paper which is reproduced is https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf. The link to the code Google Colab is https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb
 
 Authors: 
 Seger Tak:  - seger.tak@outlook.com
-Sandeep Patil:  - sandeeppatil538@gmail.com
+Sandeep Patil:  - s.patil-1@student.tudelft.nl
 
 ## Introduction
 This blog aims to describe our efforts into reproducing the paper “Deep Directional Statistics: Pose Estimation with Uncertainty Quantification”. The paper discusses a method to perform tasks object pose estimation using uncertainty quantification. This uncertainty quantification allows for an increased robustness against images of varying quality.
