@@ -1,5 +1,9 @@
 # Probabilistic pose Estimation using VGG-style network
-The link for the paper which is reproduced is https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf. The link to the code Google Colab is https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb
+
+The link for the paper which is reproduced:  https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf. 
+
+
+The link to the code Google Colab notebook: https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb
 
 Authors: 
 Seger Tak:  - seger.tak@outlook.com
