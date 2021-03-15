@@ -1,10 +1,5 @@
 # Probabilistic pose Estimation using VGG-style network
 
-The link for the paper which is reproduced:  https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf. 
-
-
-The link to the code Google Colab notebook: https://github.com/sandeeprockstar/Pose_Estimation/blob/master/RP_Group6_Pytroch_code.ipynb
-
 Authors: 
 Seger Tak:  - seger.tak@outlook.com
 Sandeep Patil:  - s.patil-1@student.tudelft.nl
@@ -29,6 +24,7 @@ Figure: Distribution based on different kappa values
 
 ### Original code
 The paper is provided with code, which is written in Tensorflow using the Keras high-level API. These software packages go about in a different way of building neural networks compared to Pytorch. The paper itself describes little about steps followed to achieve the desired results, and given that it is quite a complicated topic made rebuilding the code, from TensorFlow, in Pytorch a difficult process. However, it did provide a good basis to learn on.
+The link for the paper which is reproduced:  https://eccv2018.org/openaccess/content_ECCV_2018/papers/Sergey_Prokudin_Deep_Directional_Statistics_ECCV_2018_paper.pdf. 
 
 ## Understanding the original code in Keras
 <!-- As we both are novices in both Pytorch and Tensorflow understanding the original code was already quite a big task. Additionally, --> Most of the code was uncommented and we were not able to run the code out of the box for any of the datasets/loss-function scenarios. In order to fully understand the deep neural net proposed in the paper the main focus was to get the single density model running for the PASCAL3D+ dataset. This was considered an essential addition to the explanation provided in the paper for us to understand what is exactly happening.
